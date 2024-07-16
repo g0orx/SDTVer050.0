@@ -49,11 +49,15 @@ extern struct maps myMapFiles[];
 //======================================== Symbolic Constants for the T41 ===================================================
 #define RIGNAME                     "T41-EP SDT"
 #define NUMBER_OF_SWITCHES          18              // Number of push button switches. 16 on older boards
-#if !defined(G0ORX_FRONTPANEL)
-#define TOP_MENU_COUNT              14              // Menus to process AFP 09-27-22, JJP 7-8-23 AFP 04-12-24
-#else
+#if !defined(EXCLUDE_BEARING) && !defined(EXCLUDE_BODE)
+#define TOP_MENU_COUNT              14              // Menus to process AFP 09-27-22, JJP 7-8-23 AFP 04-12-2
+#elif defined(EXCLUDE_BEARING) && !defined(EXCLUDE_BODE)
+#define TOP_MENU_COUNT              13
+#elif !defined(EXCLUDE_BEARING) && defined(EXCLUDE_BODE)
+#define TOP_MENU_COUNT              13
+#elif defined(EXCLUDE_BEARING) && defined(EXCLUDE_BODE)
 #define TOP_MENU_COUNT              12              // removed Bearing and Bode for memory space
-#endif //G0ORX_FRONTPANEL
+#endif // EXCLUDE_BEARING / EXCLUDE_BODE
 #define RIGNAME_X_OFFSET            570             // Pixel count to rig name field                                       // Says we are using a Teensy 4 or 4.1
 #define RA8875_DISPLAY              1               // Comment out if not using RA8875 display
 #define TEMPMON_ROOMTEMP            25.0f
@@ -690,6 +694,7 @@ extern float32_t HP_DC_Filter_Coeffs2[];  // AFP 11-02-22
 #define CW_SHAPING_FALL 2
 #define CW_SHAPING_ZERO 3
 
+#if !defined(EXCLUDE_BODE)
 //=================== AFP 03-30-24 V012 Bode Plot variables
 extern int numBodePoints;          //Bode
 extern float BodePlotValues[];     //Bode
@@ -703,7 +708,6 @@ extern float BodeFreq[];
 extern float centerFreqBode;
 extern float centerFreqBode;
 extern long long pll_freqBode;
-extern long long pll_freq;
 extern float BodeValuesMax;
 extern float BodeValuesMaxFreq;
 extern float BodeValuesRaw[];
@@ -738,7 +742,7 @@ extern int currentFreqPos;
 extern float32_t BodePlotterBPF_state[];  // AFP 10-18-22
 extern arm_biquad_cascade_df2T_instance_f32 S1_BodePlotFilter;
 extern float32_t float_buffer_L_AudioBode[];
-extern int valPin;
+//extern int valPin;
 extern int pushButtonSwitchIndex;
 extern int endBodeFlag;
 extern int doneViewing;
@@ -752,9 +756,16 @@ void DrawPlots();
 extern int plotBodeBandFlag;
 extern float bodeResultRdB;
 extern int levelBodeChangeFlag;
+#endif // EXCLUDE_BODE
+
+
+extern long long pll_freq;
+extern int valPin;
+
 extern int currentRF_InAtten; //AFP 04-12-24
 extern int currentRF_OutAtten; //AFP 04-12-24
 //=================== AFP 03-30-24 V012 Bode Plot end
+
 
 //=================== AFP 09-04-23 V012 Quad Si5351 variables
 extern int Even_Divisor;
@@ -2181,12 +2192,12 @@ void AMDecodeSAM(); // AFP 11-03-22
 void AssignEEPROMObjectToVariable();
 
 int  BandOptions();
-#if !defined(G0ORX_FRONTPANEL)
+#if !defined(EXCLUDE_BEARING)
 float BearingHeading(char *dxCallPrefix);
 int  BearingMaps();
 
 void bmpDraw(const char *filename, int x, int y);
-#endif //G0ORX_FRONTPANEL
+#endif // EXCLUDE_BEARING
 void ButtonBandDecrease();
 void ButtonBandIncrease();
 int  ButtonDemod();

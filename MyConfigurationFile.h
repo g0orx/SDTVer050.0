@@ -1,3 +1,24 @@
+// G0ORX Preferences
+
+// G0ORX - For Memory testing
+// Uncomment to exclude BEARING and/or BODE code
+//#define EXCLUDE_BEARING
+//#define EXCLUDE_BODE
+
+// Uncomment if using G0ORX or K9HZ MCP23017 Front Panel
+#define G0ORX_FRONTPANEL
+
+#if defined(G0ORX_FRONTPANEL)
+#include "G0ORX_FrontPanel.h"
+#endif // G0ORX_FRONTPANEL
+
+// Uncomment if using G0ORX Kenwood TS-2000 CAT interface
+#define G0ORX_CAT
+
+#if defined(G0ORX_CAT)
+#include "G0ORX_CAT.h"
+#endif // G0ORX_CAT
+
 //====================== User Specific Preferences =============
 
 #define DEBUG 		                1                                         // Uncommented for debugging, comment out for normal use
@@ -58,9 +79,4 @@
   #define MASTER_CLK_MULT_TX 4
 #endif 
 
-// Uncomment if using G0ORX or K9HZ MCP23017 Front Panel
-#define G0ORX_FRONTPANEL
 
-#if defined(G0ORX_FRONTPANEL)
-#include "G0ORX_FrontPanel.h"
-#endif

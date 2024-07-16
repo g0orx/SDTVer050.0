@@ -128,13 +128,14 @@ void EncoderCenterTune() {
   }
 #endif // G0ORX_FRONTPANEL
 //=================== AFP 03-30-24 V012 Bode Plot start
- 
+#if defined(BODE)
   if (BodePlotFlag == 1) {  //AFP 03-30-24
 
     freqStartBode += (-1000000L * tuneChange);  //AFP 03-30-24
     freqBodeChangeFlag = 1;
     //tuneChange = 0L;
   } else {//if (BodePlotFlag != 1) {
+#endif // BODE
     centerFreq += -((long)freqIncrement * tuneChange);  // tune the master vfo
 
 //=================== AFP 03-30-24 V012 Bode Plot end
@@ -146,8 +147,9 @@ void EncoderCenterTune() {
     //FilterOverlay(); // AFP 10-20-22
     ShowFrequency();
     BandInformation();
+#if defined(BODE)
   }
-
+#endif // BODE
   //  }
 }
 
@@ -269,11 +271,11 @@ void EncoderVolume()  //============================== AFP 10-22-22  Begin new
 //=================== AFP 04-3-24 V012 Bode Plot start
 
 
-
+#if defined(BODE)
     refLevelBode += adjustVolEncoder;  //AFP 03-30-24
 
     levelBodeChangeFlag = 1;
-
+#endif // BODE
 //=================== AFP 04-3-24 V012 Bode Plot end
 
   volumeChangeFlag = true;  // Need this because of unknown timing in display updating.
@@ -539,9 +541,11 @@ FASTRUN  // Causes function to be allocated in RAM1 at startup for fastest perfo
   }
 
   TxRxFreq = centerFreq + NCOFreq;  // KF5N
+#if defined(BODE)
   freqStopBode += (1000000L * fineTuneEncoderMove); //=================== AFP 03-30-24 V012 Bode Plot
   freqBodeChangeFlag = 1; //=================== AFP 03-30-24 V012 Bode Plot
-  fineTuneEncoderMove = 0L; 
+  fineTuneEncoderMove = 0L;
+#endif // BODE
 }
 
 

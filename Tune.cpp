@@ -160,8 +160,6 @@ void ResetTuning() {
 
 void SetFreq() {  //AFP
 
-Serial.println("SetFreq: "+String(centerFreq));
-
 #if defined(G0ORX_FRONTPANEL)
   __disable_irq();
 #endif // G0ORX_FRONTPANEL
@@ -178,7 +176,6 @@ Serial.println("SetFreq: "+String(centerFreq));
   pll_freq = Clk1SetFreq * multiple;
   freq = pll_freq / multiple;
 
-  Serial.println(String(__FUNCTION__)+String(": freq=")+String(freq)+String(" pll_freq=")+String(pll_freq)+String(" multiple=")+String(multiple));
   //si5351.output_enable(SI5351_CLK0, 1);
   //si5351.output_enable(SI5351_CLK1, 1);
   //si5351.output_enable(SI5351_CLK2, 0);
@@ -192,7 +189,6 @@ Serial.println("SetFreq: "+String(centerFreq));
   si5351.set_phase(SI5351_CLK0, 0);
   si5351.set_phase(SI5351_CLK1, multiple);
   if (multiple != oldMultiple) {
-    Serial.println("pll_reset PLLA");
     si5351.pll_reset(SI5351_PLLA);
     //si5351.pll_reset(SI5351_PLLB);
     //Serial.println("Reset");

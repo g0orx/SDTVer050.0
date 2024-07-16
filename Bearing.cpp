@@ -2,7 +2,7 @@
 #include "SDT.h"
 #endif
 
-#if !defined(G0ORX_FRONTPANEL)
+#if !defined(EXCLUDE_BEARING)
 /*
   #define SD_CS                       BUILTIN_SDCARD        // Works on T_3.6 and T_4.1 ...
 
@@ -96,7 +96,7 @@ float homeLon = myMapFiles[0].lon;  // your QTH longitude
 float dxLat;
 float dxLon;
 
-PROGMEM struct cities dxCities[] = {
+PROGMEM struct cities dxCities[] = {  // was PROGMEM
   // From John G0ORX.  Increases stack size.
   // callPrefix country  lat lon
   "1A", "MALTA ORDER", 45, 12.5,
@@ -1380,7 +1380,7 @@ inline void Color565ToRGB(uint16_t color, uint8_t &r, uint8_t &g, uint8_t &b) {
   tft.Color565ToRGB(color, r, g, b);
 }
 
-#endif // G0ORX_FRONTPANEL
+#endif // BEARING
 
 /*****
   Purpose: Initialize the SD card
@@ -1406,7 +1406,7 @@ int InitializeSDCard() {
   return 1;
 }
 
-#if !defined(G0ORX_FRONTPANEL)
+#if !defined(EXCLUDE_BEARING)
 /*****
   Purpose: Erase initialization error message
 
@@ -1632,4 +1632,4 @@ int WhichOneToUse(char ptrMaps[][50], int count) {
   return temp;
 }
 
-#endif // G0ORX_FRONTPANEL
+#endif // EXCLUDE_BEARING

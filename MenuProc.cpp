@@ -973,7 +973,9 @@ int EEPROMOptions() {
       break;
 
     case 6:
+#if !defined(G0ORX_CAT)
       SDEEPROMDump();  // Show SD data
+#endif // G0ORX_CAT
       break;
 
     default:

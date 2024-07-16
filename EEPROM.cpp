@@ -39,7 +39,7 @@ static char* EEPROMSetVersion(void)
   Return value;
     void
 *****/
-void EEPROMRead() {
+FLASHMEM void EEPROMRead() {
   int i;
   int v049_version=0; //DB2OO, 10-SEP-23
 #define MORSE_STRING_DISPLAY(s)  {size_t j; for (j=0;j<strlen(s);j++) MorseCharacterDisplay(s[j]);}  
@@ -49,11 +49,11 @@ void EEPROMRead() {
   for (i=0; i<10; i++) { versionSettings[i]= EEPROM.read(EEPROM_BASE_ADDRESS+i); }
 #ifdef DEBUG1 
     //display version in EEPROM in last line of display
-    MORSE_STRING_DISPLAY("EEPROMVersion ");
+    MORSE_STRING_DISPLAY(F("EEPROMVersion "));
     if (strlen(versionSettings) <10) {
       MORSE_STRING_DISPLAY(versionSettings);
     }else {
-      MORSE_STRING_DISPLAY("<<INVALID>>");
+      MORSE_STRING_DISPLAY(F("<<INVALID>>"));
     }
     MyDelay(1000);
 #endif
@@ -80,7 +80,7 @@ void EEPROMRead() {
     // after this we will read the default values for this version
   } else {
 #ifdef DEBUG1  
-    MORSE_STRING_DISPLAY("-->Reading EEPROM content...");
+    MORSE_STRING_DISPLAY(F("-->Reading EEPROM content..."));
     MyDelay(1000);
 #endif
   }
@@ -260,7 +260,7 @@ void EEPROMRead() {
   Return value;
     void
 *****/
-void EEPROMWrite() {
+FLASHMEM void EEPROMWrite() {
   strncpy(EEPROMData.versionSettings, EEPROMSetVersion(), 9);  // KF5N
 
   EEPROMData.AGCMode = AGCMode;
@@ -369,262 +369,262 @@ void EEPROMWrite() {
   Return value;
     void
 *****/
-void EEPROMShow() 
+FLASHMEM void EEPROMShow() 
 {
    int i;
 
-  Serial.println("----- EEPROM Parameters: -----");
+  Serial.println(F("----- EEPROM Parameters: -----"));
 
-  Serial.print("Version                         = ");
+  Serial.print(F("Version                         = "));
   Serial.println(EEPROMData.versionSettings);
-  Serial.print("AGCMode                         = ");
+  Serial.print(F("AGCMode                         = "));
   Serial.println(EEPROMData.AGCMode);
-  Serial.print("audioVolume                     = ");
+  Serial.print(F("audioVolume                     = "));
   Serial.println(EEPROMData.audioVolume);
-  Serial.print("rfGainAllBands                  = ");
+  Serial.print(F("rfGainAllBands                  = "));
   Serial.println(EEPROMData.rfGainAllBands);
-  Serial.print("spectrumNoiseFloor              = ");
+  Serial.print(F("spectrumNoiseFloor              = "));
   Serial.println(EEPROMData.spectrumNoiseFloor);
-  Serial.print("tuneIndex                       = ");
+  Serial.print(F("tuneIndex                       = "));
   Serial.println(EEPROMData.tuneIndex);
-  Serial.print("stepFineTne                     = ");
+  Serial.print(F("stepFineTne                     = "));
   Serial.println(EEPROMData.stepFineTune);
-  Serial.print("powerLevel                      = ");
+  Serial.print(F("powerLevel                      = "));
   Serial.println(EEPROMData.powerLevel);
-  Serial.print("xmtMode                         = ");
+  Serial.print(F("xmtMode                         = "));
   Serial.println(EEPROMData.xmtMode);
-  Serial.print("nrOptionSelect                  = ");
+  Serial.print(F("nrOptionSelect                  = "));
   Serial.println(EEPROMData.nrOptionSelect);
-  Serial.print("currentScale                    = ");
+  Serial.print(F("currentScale                    = "));
   Serial.println(EEPROMData.currentScale);
-  Serial.print("spectrum_zoom                   = ");
+  Serial.print(F("spectrum_zoom                   = "));
   Serial.println(EEPROMData.spectrum_zoom);
-  Serial.print("spect_display_scale             = ");
+  Serial.print(F("spect_display_scale             = "));
   Serial.println(EEPROMData.spectrum_display_scale);
-  Serial.println("----- CW Parameters: -----");
-  Serial.print("CWFilterIndex                   = ");
+  Serial.println(F("----- CW Parameters: -----"));
+  Serial.print(F("CWFilterIndex                   = "));
   Serial.println(EEPROMData.CWFilterIndex);
-  Serial.print("paddleDah                       = ");
+  Serial.print(F("paddleDah                       = "));
   Serial.println(EEPROMData.paddleDah);
-  Serial.print("paddleDit                       = ");
+  Serial.print(F("paddleDit                       = "));
   Serial.println(EEPROMData.paddleDit);
-  Serial.print("decoderFlag                     = ");
+  Serial.print(F("decoderFlag                     = "));
   Serial.println(EEPROMData.decoderFlag);
-  Serial.print("keyType                         = ");
+  Serial.print(F("keyType                         = "));
   Serial.println(EEPROMData.keyType);
-  Serial.print("wordsPerMinute                  = ");
+  Serial.print(F("wordsPerMinute                  = "));
   Serial.println(EEPROMData.currentWPM);
-  Serial.print("sidetoneVolume                  = ");
+  Serial.print(F("sidetoneVolume                  = "));
   Serial.println(EEPROMData.sidetoneVolume, 5);
-  Serial.print("cwTransmitDelay                 = ");
+  Serial.print(F("cwTransmitDelay                 = "));
   Serial.println(EEPROMData.cwTransmitDelay);
-  Serial.println("----- Current Frequencies & Bands: -----");
-  Serial.print("activeVFO                       = ");
+  Serial.println(F("----- Current Frequencies & Bands: -----"));
+  Serial.print(F("activeVFO                       = "));
   Serial.println(EEPROMData.activeVFO);
-  Serial.print("freqIncrement                   = ");
+  Serial.print(F("freqIncrement                   = "));
   Serial.println(EEPROMData.freqIncrement);
-  Serial.print("currentBand                     = ");
+  Serial.print(F("currentBand                     = "));
   Serial.println(EEPROMData.currentBand);
-  Serial.print("currentBandA                    = ");
+  Serial.print(F("currentBandA                    = "));
   Serial.println(EEPROMData.currentBandA);
-  Serial.print("currentBandB                    = ");
+  Serial.print(F("currentBandB                    = "));
   Serial.println(EEPROMData.currentBandB);
-  Serial.print("currentFreqA                    = ");
+  Serial.print(F("currentFreqA                    = "));
   Serial.println(EEPROMData.currentFreqA);
-  Serial.print("currentFreqB                    = ");
+  Serial.print(F("currentFreqB                    = "));
   Serial.println(EEPROMData.currentFreqB);
-  Serial.print("freqCorrectionFactor            = ");
+  Serial.print(F("freqCorrectionFactor            = "));
   Serial.println(EEPROMData.freqCorrectionFactor);
-  Serial.println("----- Equalizer Parameters -----");
+  Serial.println(F("----- Equalizer Parameters -----"));
   for (i = 0; i < EQUALIZER_CELL_COUNT; i++) {
     if (i < 10) {
-      Serial.print(" ");
+      Serial.print(F(" "));
     }
-    Serial.print("               equalizerRec[");
+    Serial.print(F("               equalizerRec["));
     Serial.print(i);
-    Serial.print("] = ");
+    Serial.print(F("] = "));
     Serial.println(EEPROMData.equalizerRec[i]);
   }
-  Serial.println(" ");
+  Serial.println(F(" "));
   for (i = 0; i < EQUALIZER_CELL_COUNT; i++) {
     if (i < 10) {
-      Serial.print(" ");
+      Serial.print(F(" "));
     }
-    Serial.print("               equalizerXmt[");
+    Serial.print(F("               equalizerXmt["));
     Serial.print(i);
-    Serial.print("] = ");
+    Serial.print(F("] = "));
     Serial.println(EEPROMData.equalizerXmt[i]);
   }
-  Serial.println("----- Mic Compressor Parameters -----");
-  Serial.print("micCompression                  = ");
+  Serial.println(F("----- Mic Compressor Parameters -----"));
+  Serial.print(F("micCompression                  = "));
   Serial.println(EEPROMData.currentMicThreshold);
-  Serial.print("currentMicCompRatio             = ");
+  Serial.print(F("currentMicCompRatio             = "));
   Serial.println(EEPROMData.currentMicCompRatio);
-  Serial.print("currentMicAttack                = ");
+  Serial.print(F("currentMicAttack                = "));
   Serial.println(EEPROMData.currentMicAttack);
-  Serial.print("currentMicRelease               = ");
+  Serial.print(F("currentMicRelease               = "));
   Serial.println(EEPROMData.currentMicRelease);
-  Serial.print("currentMicGain                  = ");
+  Serial.print(F("currentMicGain                  = "));
   Serial.println(EEPROMData.currentMicGain);
-  Serial.println("----- Switch Matrix Values -----");
+  Serial.println(F("----- Switch Matrix Values -----"));
   for (i = 0; i < NUMBER_OF_SWITCHES; i++) {
     if (i < 10) {
-      Serial.print(" ");
+      Serial.print(F(" "));
     }
-    Serial.print("               switchValues[");
+    Serial.print(F("               switchValues["));
     Serial.print(i);
-    Serial.print("] = ");
+    Serial.print(F("] = "));
     Serial.println(EEPROMData.switchValues[i]);
   }
-  Serial.println("----- Filter Parameters -----");
-  Serial.print("LPF coeff                       = ");
+  Serial.println(F("----- Filter Parameters -----"));
+  Serial.print(F("LPF coeff                       = "));
   Serial.println(EEPROMData.LPFcoeff);
-  Serial.print("NR_PSI                          = ");
+  Serial.print(F("NR_PSI                          = "));
   Serial.println(EEPROMData.NR_PSI);
-  Serial.print("NR_alpha                        = ");
+  Serial.print(F("NR_alpha                        = "));
   Serial.println(EEPROMData.NR_alpha);
-  Serial.print("NR_beta                         = ");
+  Serial.print(F("NR_beta                         = "));
   Serial.println(EEPROMData.NR_beta);
-  Serial.print("NR_omega                        = ");
+  Serial.print(F("NR_omega                        = "));
   Serial.println(EEPROMData.omegaN);
-  Serial.print("pll_fmax                        = ");
+  Serial.print(F("pll_fmax                        = "));
   Serial.println(EEPROMData.pll_fmax);
-  Serial.println("----- Power Out Calibration Parameters -----");
+  Serial.println(F("----- Power Out Calibration Parameters -----"));
   for (int i = 0; i < NUMBER_OF_BANDS; i++) {
-    Serial.print("                  powerOutCW[");
+    Serial.print(F("                  powerOutCW["));
     Serial.print(i);
-    Serial.print("] = ");
+    Serial.print(F("] = "));
     Serial.println(EEPROMData.powerOutCW[i], 5);  //AFP 10-13-22
   }
-  Serial.println(" ");  
+  Serial.println(F(" "));  
   for (int i = 0; i < NUMBER_OF_BANDS; i++) {
-    Serial.print("                 powerOutSSB[");
+    Serial.print(F("                 powerOutSSB["));
     Serial.print(i);
-    Serial.print("] = ");
+    Serial.print(F("] = "));
     Serial.println(EEPROMData.powerOutSSB[i], 5);
   }
-  Serial.println(" ");
+  Serial.println(F(" "));
   for (int i = 0; i < NUMBER_OF_BANDS; i++) {
-    Serial.print("            CWPowerCalFactor[");
+    Serial.print(F("            CWPowerCalFactor["));
     Serial.print(i);
-    Serial.print("] = ");
+    Serial.print(F("] = "));
     Serial.println(EEPROMData.CWPowerCalibrationFactor[i], 5);
   }
-  Serial.println(" ");
+  Serial.println(F(" "));
   for (int i = 0; i < NUMBER_OF_BANDS; i++) {
-    Serial.print("           SSBPowerCalFactor[");
+    Serial.print(F("           SSBPowerCalFactor["));
     Serial.print(i);
-    Serial.print("] = ");
+    Serial.print(F("] = "));
     Serial.println(EEPROMData.SSBPowerCalibrationFactor[i], 5);
   }
-  Serial.println(" ");
-  Serial.println("----- I/Q Calibration Parameters -----");
+  Serial.println(F(" "));
+  Serial.println(F("----- I/Q Calibration Parameters -----"));
   for (int i = 0; i < NUMBER_OF_BANDS; i++) {
-    Serial.print(" IQAmplitudeCorrectionFactor[");
+    Serial.print(F(" IQAmplitudeCorrectionFactor["));
     Serial.print(i);
-    Serial.print("] = ");
+    Serial.print(F("] = "));
     Serial.println(EEPROMData.IQAmpCorrectionFactor[i], 3);
   }
-  Serial.println(" ");
+  Serial.println(F(" "));
   for (int i = 0; i < NUMBER_OF_BANDS; i++) {
-    Serial.print("     IQPhaseCorrectionFactor[");
+    Serial.print(F("     IQPhaseCorrectionFactor["));
     Serial.print(i);
-    Serial.print("] = ");
+    Serial.print(F("] = "));
     Serial.println(EEPROMData.IQPhaseCorrectionFactor[i], 3);
   }
-  Serial.println(" ");
+  Serial.println(F(" "));
   for (int i = 0; i < NUMBER_OF_BANDS; i++) {
-    Serial.print("IQXAmplitudeCorrectionFactor[");
+    Serial.print(F("IQXAmplitudeCorrectionFactor["));
     Serial.print(i);
-    Serial.print("] = ");
+    Serial.print(F("] = "));
     Serial.println(EEPROMData.IQXAmpCorrectionFactor[i], 3);
   }
-  Serial.println(" ");
+  Serial.println(F(" "));
   for (int i = 0; i < NUMBER_OF_BANDS; i++) {
-    Serial.print("    IQXPhaseCorrectionFactor[");
+    Serial.print(F("    IQXPhaseCorrectionFactor["));
     Serial.print(i);
-    Serial.print("] = ");
+    Serial.print(F("] = "));
     Serial.println(EEPROMData.IQXPhaseCorrectionFactor[i], 3);
   }
-  Serial.println(" ");
-  Serial.println("----- Favorite Frequencies -----");
+  Serial.println(F(" "));
+  Serial.println(F("----- Favorite Frequencies -----"));
   for (i = 0; i < MAX_FAVORITES; i++) {
     if (i < 10) {
-      Serial.print(" ");
-    }    Serial.print("              favoriteFreqs[");
+      Serial.print(F(" "));
+    }    Serial.print(F("              favoriteFreqs["));
     Serial.print(i);
-    Serial.print("] = ");
+    Serial.print(F("] = "));
     if (i < 4) {
-      Serial.print(" ");
+      Serial.print(F(" "));
     }
     Serial.println(EEPROMData.favoriteFreqs[i]);
   }
-  Serial.println("----- Last Frequencies -----");
+  Serial.println(F("----- Last Frequencies -----"));
   for (int i = 0; i < NUMBER_OF_BANDS; i++) {
-    Serial.print("          lastFrequencies[");
+    Serial.print(F("          lastFrequencies["));
     Serial.print(i);
-    Serial.print("][0] = ");
+    Serial.print(F("][0] = "));
     if (i < 2) {
-      Serial.print(" ");
+      Serial.print(F(" "));
     }
     Serial.println(EEPROMData.lastFrequencies[i][0]);
   }
   for (int i = 0; i < NUMBER_OF_BANDS; i++) {
-    Serial.print("          lastFrequencies[");
+    Serial.print(F("          lastFrequencies["));
     Serial.print(i);
-    Serial.print("][1] = ");
+    Serial.print(F("][1] = "));
     if (i < 2) {
-      Serial.print(" ");
+      Serial.print(F(" "));
     }  
     Serial.println(EEPROMData.lastFrequencies[i][1]);
   }
-  Serial.println(" ");
-  Serial.print("centerFreq                      = ");
+  Serial.println(F(" "));
+  Serial.print(F("centerFreq                      = "));
   Serial.println((long)EEPROMData.centerFreq);
 
-  Serial.print("mapFileName                     = ");
+  Serial.print(F("mapFileName                     = "));
   Serial.println(EEPROMData.mapFileName);
 
-  Serial.print("myCall                          = ");
+  Serial.print(F("myCall                          = "));
   Serial.println(EEPROMData.myCall);
 
-  Serial.print("myTimeZone                      = ");
+  Serial.print(F("myTimeZone                      = "));
   Serial.println(EEPROMData.myTimeZone);
 
-  Serial.print("separationCharacter             = ");
+  Serial.print(F("separationCharacter             = "));
   Serial.println((char)EEPROMData.separationCharacter);
 
-  Serial.println(" ");  // JJP 7-3-23
+  Serial.println(F(" "));  // JJP 7-3-23
 
-  Serial.print("paddleFlip                      = ");
+  Serial.print(F("paddleFlip                      = "));
   Serial.println(EEPROMData.paddleFlip);
-  Serial.print("sdCardPresent                   = ");
+  Serial.print(F("sdCardPresent                   = "));
   Serial.println(EEPROMData.sdCardPresent);
-  Serial.print("myLat                           = ");
+  Serial.print(F("myLat                           = "));
   Serial.println(EEPROMData.myLat);
-  Serial.print("myLong                          = ");
+  Serial.print(F("myLong                          = "));
   Serial.println(EEPROMData.myLong);
 
-  Serial.println(" ");  // JJP 7-3-23
+  Serial.println(F(" "));  // JJP 7-3-23
 
   for (int i = 0; i < NUMBER_OF_BANDS; i++) {
-    Serial.print("        currentNoiseFloor[");
+    Serial.print(F("        currentNoiseFloor["));
     Serial.print(i);
-    Serial.print("]    = ");
+    Serial.print(F("]    = "));
     Serial.println(EEPROMData.currentNoiseFloor[i]);
   }
-  Serial.print("compressorFlag                  = ");
+  Serial.print(F("compressorFlag                  = "));
   Serial.println(EEPROMData.compressorFlag);
 
-  Serial.print("receiveEQFlag                   = ");
+  Serial.print(F("receiveEQFlag                   = "));
   Serial.println(EEPROMData.receiveEQFlag);
-  Serial.print("xmitEQFlag                      = ");
+  Serial.print(F("xmitEQFlag                      = "));
   Serial.println(EEPROMData.xmitEQFlag);
-  Serial.print("CWToneIndex                     = ");
+  Serial.print(F("CWToneIndex                     = "));
   Serial.println(EEPROMData.CWToneIndex);
 
 
-  Serial.println("----- End EEPROM Parameters -----");
+  Serial.println(F("----- End EEPROM Parameters -----"));
 }
 
 /*****
@@ -827,7 +827,7 @@ void GetFavoriteFrequency() {
   Return value;
     void
 *****/
-void CopyEEPROM() {
+FLASHMEM void CopyEEPROM() {
   //  EEPROM.get(EEPROM_BASE_ADDRESS, EEPROMData);                       // Read as one large chunk
 
   AGCMode = EEPROMData.AGCMode;                // 1 byte
@@ -955,7 +955,7 @@ void CopyEEPROM() {
     void
 *****/
 
-void EEPROMSaveDefaults2() {
+FLASHMEM void EEPROMSaveDefaults2() {
   strcpy(EEPROMData.versionSettings, EEPROMSetVersion());  // Update version
 
   EEPROMData.AGCMode = 1;
@@ -1178,7 +1178,7 @@ void EEPROMSaveDefaults2() {
   Return value;
     int                         0 unsuccessful, 1 ok
 *****/
-int CopySDToEEPROM() {
+FLASHMEM int CopySDToEEPROM() {
   char character;
   char line[150];
   char *target;
@@ -1200,7 +1200,7 @@ int CopySDToEEPROM() {
 /*
     Serial.printf("lineCount = %d\n", lineCount);     // Greg's debug code
     if (lineCount == 100) {
-      Serial.printf("Hit end of file!\n");
+      Serial.printf("Hit end of file!\n"));
       break;
     }
 */    
@@ -1792,7 +1792,7 @@ int CopySDToEEPROM() {
         EEPROMData.CWToneIndex    = atoi("2");
 
       default:
-        Serial.print("Shouldn't be here: lineCount = ");
+        Serial.print(F("Shouldn't be here: lineCount = "));
         Serial.println(lineCount);
         break;
     }
@@ -1825,7 +1825,7 @@ int CopySDToEEPROM() {
     void
 
 *****/
-void ConvertForEEPROM(File file, char *buffer, int val, int whatDataType) {
+FLASHMEM void ConvertForEEPROM(File file, char *buffer, int val, int whatDataType) {
   char temp[10];
 
   temp[0] = '\0';
@@ -1843,14 +1843,14 @@ void ConvertForEEPROM(File file, char *buffer, int val, int whatDataType) {
       strcpy(temp, EEPROMSetVersion());
       break;
     default:
-#ifdef DEBUG
+#if defined(DEBUG)
       Serial.println("Error");
 #endif
       break;
   }
   strcat(buffer, " = ");
   strcat(buffer, temp);
-#ifdef DEBUG1
+#if defined(DEBUG1)
   Serial.println(buffer);
 #endif
   file.println(buffer);
@@ -1879,128 +1879,128 @@ int CopyEEPROMToSD() {
     return 0;                                       // Go home
   }
   file.seek(0L);  // Reset to BOF so we don't append
-  strcpy(buffer, "EEPROMData.versionSettings = ");
+  strcpy(buffer,"EEPROMData.versionSettings = ");
   strcat(buffer, EEPROMSetVersion());
   file.println(buffer);
 
-  strcpy(buffer, "EEPROMData.AGCMode = ");
+  strcpy(buffer,"EEPROMData.AGCMode = ");
   itoa(AGCMode, temp, DEC);
   strcat(buffer, temp);
   file.println(buffer);
-  strcpy(buffer, "EEPROMData.audioVolume = ");
+  strcpy(buffer,"EEPROMData.audioVolume = ");
   itoa(audioVolume, temp, DEC);
   strcat(buffer, temp);
   file.println(buffer);
-  strcpy(buffer, "EEPROMData.rfGainAllBands = ");
+  strcpy(buffer,"EEPROMData.rfGainAllBands = ");
   itoa(rfGainAllBands, temp, DEC);
   strcat(buffer, temp);
   file.println(buffer);
-  strcpy(buffer, "EEPROMData.spectrumNoiseFloor = ");
+  strcpy(buffer,"EEPROMData.spectrumNoiseFloor = ");
   itoa(spectrumNoiseFloor, temp, DEC);
   strcat(buffer, temp);
   file.println(buffer);
-  strcpy(buffer, "EEPROMData.tuneIndex = ");
+  strcpy(buffer,"EEPROMData.tuneIndex = ");
   itoa(tuneIndex, temp, DEC);
   strcat(buffer, temp);
   file.println(buffer);
-  strcpy(buffer, "EEPROMData.stepFineTune = ");
+  strcpy(buffer,"EEPROMData.stepFineTune = ");
   ltoa(stepFineTune, temp, DEC);
   strcat(buffer, temp);
   file.println(buffer);
-  strcpy(buffer, "EEPROMData.powerLevel = ");
+  strcpy(buffer,"EEPROMData.powerLevel = ");
   itoa(transmitPowerLevel, temp, DEC);
   strcat(buffer, temp);
   file.println(buffer);
-  strcpy(buffer, "EEPROMData.xmtMode = 0");
+  strcpy(buffer,"EEPROMData.xmtMode = 0");
   itoa(xmtMode, temp, DEC);
   strcat(buffer, temp);
   file.println(buffer);
-  strcpy(buffer, "EEPROMData.nrOptionSelect = ");  // KF5N
+  strcpy(buffer,"EEPROMData.nrOptionSelect = ");  // KF5N
   itoa(nrOptionSelect, temp, DEC);
   strcat(buffer, temp);
   file.println(buffer);
-  strcpy(buffer, "EEPROMData.currentScale = ");
+  strcpy(buffer,"EEPROMData.currentScale = ");
   itoa(currentScale, temp, DEC);
   strcat(buffer, temp);
   file.println(buffer);
-  strcpy(buffer, "EEPROMData.spectrum_zoom = ");  // long data type  KF5N
+  strcpy(buffer,"EEPROMData.spectrum_zoom = ");  // long data type  KF5N
   ltoa(spectrum_zoom, temp, DEC);
   strcat(buffer, temp);
   file.println(buffer);
-  strcpy(buffer, "EEPROMData.spectrum_display_scale = ");  // float data type
+  strcpy(buffer,"EEPROMData.spectrum_display_scale = ");  // float data type
   dtostrf(spectrum_display_scale, 6, 1, temp);             // Field of up to 6 digits with 1 decimal place
   strcat(buffer, temp);
   file.println(buffer);
-  strcpy(buffer, "EEPROMData.CWFilterIndex = ");
+  strcpy(buffer,"EEPROMData.CWFilterIndex = ");
   itoa(CWFilterIndex, temp, DEC);
   strcat(buffer, temp);
   file.println(buffer);
-  strcpy(buffer, "EEPROMData.paddleDit = ");
+  strcpy(buffer,"EEPROMData.paddleDit = ");
   itoa(paddleDit, temp, DEC);
   strcat(buffer, temp);
   file.println(buffer);
-  strcpy(buffer, "EEPROMData.paddleDah = ");
+  strcpy(buffer,"EEPROMData.paddleDah = ");
   itoa(paddleDah, temp, DEC);
   strcat(buffer, temp);
   file.println(buffer);
-  strcpy(buffer, "EEPROMData.decoderFlag = ");
+  strcpy(buffer,"EEPROMData.decoderFlag = ");
   itoa(decoderFlag, temp, DEC);
   strcat(buffer, temp);
   file.println(buffer);
-  strcpy(buffer, "EEPROMData.keyType = ");
+  strcpy(buffer,"EEPROMData.keyType = ");
   itoa(keyType, temp, DEC);
   strcat(buffer, temp);
   file.println(buffer);
-  strcpy(buffer, "EEPROMData.currentWPM = ");
+  strcpy(buffer,"EEPROMData.currentWPM = ");
   itoa(currentWPM, temp, DEC);
   strcat(buffer, temp);
   file.println(buffer);
 
-  strcpy(buffer, "EEPROMData.sidetoneVolume = ");  // float data type
+  strcpy(buffer,"EEPROMData.sidetoneVolume = ");  // float data type
   dtostrf(sidetoneVolume, 6, 4, temp);             // Field of up to 6 digits with 1 decimal place
   strcat(buffer, temp);
   file.println(buffer);
-  strcpy(buffer, "EEPROMData.cwTransmitDelay = ");  // long data type
+  strcpy(buffer,"EEPROMData.cwTransmitDelay = ");  // long data type
   ltoa(cwTransmitDelay, temp, DEC);
   strcat(buffer, temp);
   file.println(buffer);
-  strcpy(buffer, "EEPROMData.activeVFO = 0");
+  strcpy(buffer,"EEPROMData.activeVFO = 0");
   itoa(activeVFO, temp, DEC);
   strcat(buffer, temp);
   file.println(buffer);
-  strcpy(buffer, "EEPROMData.freqIncrement = ");
+  strcpy(buffer,"EEPROMData.freqIncrement = ");
   itoa(freqIncrement, temp, DEC);
   strcat(buffer, temp);
   file.println(buffer);
 
-  strcpy(buffer, "EEPROMData.currentBand = ");
+  strcpy(buffer,"EEPROMData.currentBand = ");
   itoa(currentBand, temp, DEC);
   strcat(buffer, temp);
   file.println(buffer);
-  strcpy(buffer, "EEPROMData.currentBandA = ");
+  strcpy(buffer,"EEPROMData.currentBandA = ");
   itoa(currentBandA, temp, DEC);
   strcat(buffer, temp);
   file.println(buffer);
-  strcpy(buffer, "EEPROMData.currentBandB = ");
+  strcpy(buffer,"EEPROMData.currentBandB = ");
   itoa(currentBandB, temp, DEC);
   strcat(buffer, temp);
   file.println(buffer);
-  strcpy(buffer, "EEPROMData.currentFreqA = ");  // long data type
+  strcpy(buffer,"EEPROMData.currentFreqA = ");  // long data type
   ltoa(currentFreqA, temp, DEC);
   strcat(buffer, temp);
   file.println(buffer);
-  strcpy(buffer, "EEPROMData.currentFreqB = ");  // long data type
+  strcpy(buffer,"EEPROMData.currentFreqB = ");  // long data type
   ltoa(currentFreqB, temp, DEC);
   strcat(buffer, temp);
   file.println(buffer);
-  strcpy(buffer, "EEPROMData.freqCorrectionFactor = ");  // long data type
+  strcpy(buffer,"EEPROMData.freqCorrectionFactor = ");  // long data type
   ltoa(freqCorrectionFactor, temp, DEC);
   strcat(buffer, temp);
   file.println(buffer);
 
   for (i = 0; i < EQUALIZER_CELL_COUNT; i++) {
     itoa(i, digits, DEC);
-    strcpy(buffer, "EEPROMData.equalizerRec[");  // long data type
+    strcpy(buffer,"EEPROMData.equalizerRec[");  // long data type
     strcat(buffer, digits);
     strcat(buffer, "] = ");
     itoa(recEQ_Level[i], temp, DEC);
@@ -2009,37 +2009,37 @@ int CopyEEPROMToSD() {
   }
   for (i = 0; i < EQUALIZER_CELL_COUNT; i++) {
     itoa(i, digits, DEC);
-    strcpy(buffer, "EEPROMData.equalizerXmt[");  // long data type
+    strcpy(buffer,"EEPROMData.equalizerXmt[");  // long data type
     strcat(buffer, digits);
     strcat(buffer, "] = ");
     itoa(xmtEQ_Level[i], temp, DEC);
     strcat(buffer, temp);
     file.println(buffer);
   }
-  strcpy(buffer, "EEPROMData.currentMicThreshold = ");
+  strcpy(buffer,"EEPROMData.currentMicThreshold = ");
   itoa(currentMicThreshold, temp, DEC);
   strcat(buffer, temp);
   file.println(buffer);
-  strcpy(buffer, "EEPROMData.currentMicCompRatio = ");  // float data type
+  strcpy(buffer,"EEPROMData.currentMicCompRatio = ");  // float data type
   dtostrf(currentMicCompRatio, 6, 1, temp);             // Field of up to 6 digits with 1 decimal place
   strcat(buffer, temp);
   file.println(buffer);
-  strcpy(buffer, "EEPROMData.currentMicAttack = ");  // float data type
+  strcpy(buffer,"EEPROMData.currentMicAttack = ");  // float data type
   dtostrf(currentMicAttack, 6, 1, temp);             // Field of up to 6 digits with 1 decimal place
   strcat(buffer, temp);
   file.println(buffer);
-  strcpy(buffer, "EEPROMData.currentMicRelease = ");  // float data type
+  strcpy(buffer,"EEPROMData.currentMicRelease = ");  // float data type
   dtostrf(currentMicRelease, 6, 1, temp);             // Field of up to 6 digits with 1 decimal place
   strcat(buffer, temp);
   file.println(buffer);
-  strcpy(buffer, "EEPROMData.currentMicGain = ");
+  strcpy(buffer,"EEPROMData.currentMicGain = ");
   itoa(currentMicGain, temp, DEC);
   strcat(buffer, temp);
   file.println(buffer);
 
   for (i = 0; i < NUMBER_OF_SWITCHES; i++) {        // switch values
     itoa(i, digits, DEC);
-    strcpy(buffer, "EEPROMData.switchValues[");
+    strcpy(buffer,"EEPROMData.switchValues[");
     strcat(buffer, digits);
     strcat(buffer, "] = ");
     itoa(switchThreshholds[i], temp, DEC);
@@ -2047,34 +2047,34 @@ int CopyEEPROMToSD() {
     file.println(buffer);
   }
 
-  strcpy(buffer, "EEPROMData.LPFcoeff = ");  // float data type
+  strcpy(buffer,"EEPROMData.LPFcoeff = ");  // float data type
   dtostrf(LPFcoeff, 6, 1, temp);             // Field of up to 6 digits with 1 decimal place
   strcat(buffer, temp);
   file.println(buffer);
-  strcpy(buffer, "EPROMData.NR_PSI = ");  // float data type
+  strcpy(buffer,"EPROMData.NR_PSI = ");  // float data type
   dtostrf(NR_PSI, 6, 1, temp);            // Field of up to 6 digits with 1 decimal place
   strcat(buffer, temp);
   file.println(buffer);
-  strcpy(buffer, "EEPROMData.NR_alpha = ");  // float data type
+  strcpy(buffer,"EEPROMData.NR_alpha = ");  // float data type
   dtostrf(NR_alpha, 6, 1, temp);             // Field of up to 6 digits with 1 decimal place
   strcat(buffer, temp);
   file.println(buffer);
-  strcpy(buffer, "EEPROMData.NR_beta = ");  // float data type
+  strcpy(buffer,"EEPROMData.NR_beta = ");  // float data type
   dtostrf(NR_beta, 6, 1, temp);             // Field of up to 6 digits with 1 decimal place
   strcat(buffer, temp);
   file.println(buffer);
-  strcpy(buffer, "EEPROMData.omegaN = ");  // float data type
+  strcpy(buffer,"EEPROMData.omegaN = ");  // float data type
   dtostrf(omegaN, 6, 1, temp);             // Field of up to 6 digits with 1 decimal place
   strcat(buffer, temp);
   file.println(buffer);
-  strcpy(buffer, "EEPROMData.pll_fmax = ");  // float data type
+  strcpy(buffer,"EEPROMData.pll_fmax = ");  // float data type
   dtostrf(pll_fmax, 6, 1, temp);             // Field of up to 6 digits with 1 decimal place
   strcat(buffer, temp);
   file.println(buffer);
 
   for (i = 0; i < NUMBER_OF_BANDS; i++) {  // powerOutCW
     itoa(i, digits, DEC);
-    strcpy(buffer, "powerOutCW[");
+    strcpy(buffer,"powerOutCW[");
     strcat(buffer, digits);
     strcat(buffer, "] = ");
     dtostrf(EEPROMData.powerOutCW[i], 6, 3, temp);
@@ -2084,7 +2084,7 @@ int CopyEEPROMToSD() {
 
   for (i = 0; i < NUMBER_OF_BANDS; i++) {  // powerOutSSB
     itoa(i, digits, DEC);
-    strcpy(buffer, "powerOutSSB[");
+    strcpy(buffer,"powerOutSSB[");
     strcat(buffer, digits);
     strcat(buffer, "] = ");
     dtostrf(EEPROMData.powerOutSSB[i], 6, 3, temp);
@@ -2094,7 +2094,7 @@ int CopyEEPROMToSD() {
 
   for (i = 0; i < NUMBER_OF_BANDS; i++) {  // CW Calibration factor
     itoa(i, digits, DEC);
-    strcpy(buffer, "EEPROMData.CWPowerCalibrationFactor[");
+    strcpy(buffer,"EEPROMData.CWPowerCalibrationFactor[");
     strcat(buffer, digits);
     strcat(buffer, "] = ");
     dtostrf(EEPROMData.CWPowerCalibrationFactor[i], 6, 3, temp);
@@ -2104,7 +2104,7 @@ int CopyEEPROMToSD() {
 
   for (i = 0; i < NUMBER_OF_BANDS; i++) {  // SSB Calibration factor
     itoa(i, digits, DEC);
-    strcpy(buffer, "EEPROMData.SSBPowerCalibrationFactor[");
+    strcpy(buffer,"EEPROMData.SSBPowerCalibrationFactor[");
     strcat(buffer, digits);
     strcat(buffer, "] = ");
     dtostrf(EEPROMData.SSBPowerCalibrationFactor[i], 6, 3, temp);
@@ -2114,7 +2114,7 @@ int CopyEEPROMToSD() {
 
   for (i = 0; i < NUMBER_OF_BANDS; i++) {  // IQ Amp Correction factor
     itoa(i, digits, DEC);
-    strcpy(buffer, "EEPROMData.IQAmpCorrectionFactor[");
+    strcpy(buffer,"EEPROMData.IQAmpCorrectionFactor[");
     strcat(buffer, digits);
     strcat(buffer, "] = ");
     dtostrf(EEPROMData.IQAmpCorrectionFactor[i], 6, 3, temp);
@@ -2124,7 +2124,7 @@ int CopyEEPROMToSD() {
 
   for (i = 0; i < NUMBER_OF_BANDS; i++) {  // IQ Phase Correction factor
     itoa(i, digits, DEC);
-    strcpy(buffer, "EEPROMData.IQPhaseCorrectionFactor[");
+    strcpy(buffer,"EEPROMData.IQPhaseCorrectionFactor[");
     strcat(buffer, digits);
     strcat(buffer, "] = ");
     dtostrf(EEPROMData.IQPhaseCorrectionFactor[i], 6, 3, temp);
@@ -2134,7 +2134,7 @@ int CopyEEPROMToSD() {
 
   for (i = 0; i < NUMBER_OF_BANDS; i++) {  // IQX Amp Correction factor
     itoa(i, digits, DEC);
-    strcpy(buffer, "EEPROMData.IQXAmpCorrectionFactor[");
+    strcpy(buffer,"EEPROMData.IQXAmpCorrectionFactor[");
     strcat(buffer, digits);
     strcat(buffer, "] = ");
     dtostrf(EEPROMData.IQXAmpCorrectionFactor[i], 6, 3, temp);
@@ -2144,7 +2144,7 @@ int CopyEEPROMToSD() {
 
   for (i = 0; i < NUMBER_OF_BANDS; i++) {  // IQX Phase Correction factor
     itoa(i, digits, DEC);
-    strcpy(buffer, "EEPROMData.IQXPhaseCorrectionFactor[");
+    strcpy(buffer,"EEPROMData.IQXPhaseCorrectionFactor[");
     strcat(buffer, digits);
     strcat(buffer, "] = ");
     dtostrf(EEPROMData.IQXPhaseCorrectionFactor[i], 6, 3, temp);
@@ -2154,7 +2154,7 @@ int CopyEEPROMToSD() {
 
   for (i = 0; i < MAX_FAVORITES; i++) {  // Last frequencies
     itoa(i, digits, DEC);
-    strcpy(buffer, "EEPROMData.favoriteFreqs[");
+    strcpy(buffer,"EEPROMData.favoriteFreqs[");
     strcat(buffer, digits);
     strcat(buffer, "] = ");
     ltoa(EEPROMData.favoriteFreqs[i], temp, DEC);  // long
@@ -2164,7 +2164,7 @@ int CopyEEPROMToSD() {
 
   for (i = 0; i < NUMBER_OF_BANDS; i++) {  // Last frequencies
     itoa(i, digits, DEC);
-    strcpy(buffer, "EEPROMData.lastFrequencies[");
+    strcpy(buffer,"EEPROMData.lastFrequencies[");
     strcat(buffer, digits);
     strcat(buffer, "][0] = ");
     ltoa(EEPROMData.lastFrequencies[i][0], temp, DEC);  // long
@@ -2174,7 +2174,7 @@ int CopyEEPROMToSD() {
 
   for (i = 0; i < NUMBER_OF_BANDS; i++) {  // Last frequencies
     itoa(i, digits, DEC);
-    strcpy(buffer, "EEPROMData.lastFrequencies[");
+    strcpy(buffer,"EEPROMData.lastFrequencies[");
     strcat(buffer, digits);
     strcat(buffer, "][1] = ");
     ltoa(EEPROMData.lastFrequencies[i][1], temp, DEC);  // long
@@ -2182,52 +2182,52 @@ int CopyEEPROMToSD() {
     file.println(buffer);
   }
 
-  strcpy(buffer, "EEPROMData.centerFreq = ");  // Center freq
+  strcpy(buffer,"EEPROMData.centerFreq = ");  // Center freq
   ltoa(EEPROMData.centerFreq, temp, DEC);      // long
   strcat(buffer, temp);
   file.println(buffer);
 
   //                                                      JJP 7/3/23
-  strcpy(buffer, "EEPROMData.mapFileName = ");  // Map file name
+  strcpy(buffer,"EEPROMData.mapFileName = ");  // Map file name
   strncat(buffer, EEPROMData.mapFileName, 50);
   file.println(buffer);
 
-  strcpy(buffer, "EEPROMData.myCall = ");  // Call
+  strcpy(buffer,"EEPROMData.myCall = ");  // Call
   strncat(buffer, EEPROMData.myCall, 10);
   file.println(buffer);
 
-  strcpy(buffer, "EEPROMData.myTimeZone = ");  // Time zone
+  strcpy(buffer,"EEPROMData.myTimeZone = ");  // Time zone
   strncat(buffer, EEPROMData.myTimeZone, 10);
   file.println(buffer);
 
-  strcpy(buffer, "EEPROMData.separationCharacter = ");  // Separation character in freq display
+  strcpy(buffer,"EEPROMData.separationCharacter = ");  // Separation character in freq display
   itoa(EEPROMData.separationCharacter, digits, DEC);
   strcat(buffer, digits);
   file.println(buffer);
 
   itoa(paddleFlip, digits, DEC);  // Paddle flip
-  strcpy(buffer, "EEPROMData.paddleFlip = ");
+  strcpy(buffer,"EEPROMData.paddleFlip = ");
   strcat(buffer, digits);
   file.println(buffer);
 
   itoa(sdCardPresent, temp, DEC);  // SD card
-  strcpy(buffer, "EEPROMData.sdCardPresent = ");
+  strcpy(buffer,"EEPROMData.sdCardPresent = ");
   strcat(buffer, temp);
   file.println(buffer);
 
-  strcpy(buffer, "EEPROMData.myLat = ");  // Latitude
+  strcpy(buffer,"EEPROMData.myLat = ");  // Latitude
   dtostrf(EEPROMData.myLat, 6, 4, temp);
   strcat(buffer, temp);
   file.println(buffer);
 
-  strcpy(buffer, "EEPROMData.myLong = ");  // Longitude
+  strcpy(buffer,"EEPROMData.myLong = ");  // Longitude
   dtostrf(EEPROMData.myLong, 6, 4, temp);
   strcat(buffer, temp);
   file.println(buffer);
 
   for (i = 0; i < NUMBER_OF_BANDS; i++) {  // Noise floor
     itoa(i, digits, DEC);
-    strcpy(buffer, "EEPROMData.currentNoiseFloor[");
+    strcpy(buffer,"EEPROMData.currentNoiseFloor[");
     strcat(buffer, digits);
     strcat(buffer, "] = ");
     itoa(EEPROMData.currentNoiseFloor[i], temp, DEC);
@@ -2235,22 +2235,22 @@ int CopyEEPROMToSD() {
     file.println(buffer);
   }
   itoa(EEPROMData.compressorFlag, temp, DEC);             // JJP  8/28/23
-  strcpy(buffer, "EEPROMData.compressorFlag = ");
+  strcpy(buffer,"EEPROMData.compressorFlag = ");
   strcat(buffer, temp);
   file.println(buffer);
 
   itoa(EEPROMData.receiveEQFlag, temp, DEC);             // JJP  2/29/24
-  strcpy(buffer, "EEPROMData.receiveEQFlag = ");
+  strcpy(buffer,"EEPROMData.receiveEQFlag = ");
   strcat(buffer, temp);
   file.println(buffer);
 
   itoa(EEPROMData.xmitEQFlag, temp, DEC);               // JJP  2/29/24
-  strcpy(buffer, "EEPROMData.xmitEQFlag = ");
+  strcpy(buffer,"EEPROMData.xmitEQFlag = ");
   strcat(buffer, temp);
   file.println(buffer);
 
   itoa(EEPROMData.CWToneIndex, temp, DEC);               // JJP  2/29/24
-  strcpy(buffer, "EEPROMData.CWToneIndex = ");
+  strcpy(buffer,"EEPROMData.CWToneIndex = ");
   strcat(buffer, temp);
   file.println(buffer);
 
@@ -2292,8 +2292,6 @@ void UpdateEEPROMVersionNumber() {
   strcpy(EEPROMData.versionSettings, EEPROMSetVersion());  // Copy the latest version to EEPROM
 }
 
-
-
 /*****
   Purpose: Reads the SD EEPROM data and writes it to the Serial object
 
@@ -2309,10 +2307,10 @@ void SDEEPROMDump()
   int lines = 0;
 
   if (!SD.begin(chipSelect)) {
-    Serial.print("SD card cannot be initialized.");
+    Serial.print(F("SD card cannot be initialized."));
   }
   // open the file.
-  Serial.println("----- Start SD EEPROM File Dump ------");
+  Serial.println(F("----- Start SD EEPROM File Dump ------"));
   File dataFile = SD.open("SDEEPROMData.txt");
 
   // if the file is available, write to it:
@@ -2331,9 +2329,10 @@ void SDEEPROMDump()
     }
     dataFile.close();
   } else {
-    Serial.println("error opening SDEEPROMData.txt");
+    Serial.println(F("error opening SDEEPROMData.txt"));
   }
 }
+
 
 /*****
   Purpose: Clears the first 1K of emulated EEPROM to 0xff

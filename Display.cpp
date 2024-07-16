@@ -56,7 +56,7 @@ void ShowName() {
   tft.setTextColor(RA8875_YELLOW);
   tft.setCursor(RIGNAME_X_OFFSET - 20, 1);
   tft.print(RIGNAME);
-#if defined(G0ORX_FRONTPANEL)
+#if defined(G0ORX_FRONTPANEL) || defined(G0ORX_CAT)
   int x = (strlen(RIGNAME)*tft.getFontWidth());
 #endif // G0ORX_FRONTPANEL
   tft.setFontScale(0);
@@ -67,7 +67,7 @@ void ShowName() {
   tft.setTextColor(RA8875_RED);  // Make it red
 #endif
   tft.print(VERSION);
-#if defined(G0ORX_FRONTPANEL)
+#if defined(G0ORX_FRONTPANEL) || defined(G0ORX_CAT)
   tft.setCursor(RIGNAME_X_OFFSET - 20 + x, 1+tft.getFontHeight());
   tft.print(" G0ORX");
 #endif // G0ORX_FRONTPANEL

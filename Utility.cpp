@@ -697,3 +697,32 @@ int SDPresentCheck() {
     return 0;
   }
 }
+
+#if defined(G0ORX_CAT)
+/*****
+  Purpose: change band from frequency
+  Paramter list:
+    long frequency
+  Return value:
+    int band
+*****/
+int ChangeBand(long f, bool updateRelays) {
+  int b;
+  for(b=FIRST_BAND;b<=LAST_BAND;b++) {
+    if(f<=bands[b].fBandHigh) {
+      break;
+    }
+  }
+  if(b>LAST_BAND) {
+    b=LAST_BAND;
+  }
+
+  if(updateRelays && b!=currentBand) {
+    digitalWrite(bandswitchPins[currentBand], LOW);
+    digitalWrite(bandswitchPins[b], HIGH);
+  }
+
+  return b;
+}
+#endif // G0ORX_CAT
+

@@ -557,6 +557,7 @@ V046d June 27, 2023  Jack Purdum (W8TEE) and includes changes by Greg:
 #ifndef BEENHERE
 #include "SDT.h"
 #endif
+
 /*                                  Presented here so you can see how the members allign
 struct maps {
   char mapNames[50];
@@ -605,10 +606,12 @@ const char *topMenus[] = { "CW Options", "RF Set", "VFO Select",
                            "EEPROM", "AGC", "Spectrum Options",
                            "Noise Floor", "Mic Gain", "Mic Comp",
                            "EQ Rec Set", "EQ Xmt Set", "Calibrate",
-#if !defined(G0ORX_FRONTPANEL)
-                           "Bearing",
+#if !defined(EXCLUDE_BEARING)
+                           "Bearing"
+#endif // EXCLUDE_BEARING
+#if !defined(EXCLUDE_BODE)
                            "Bode"
-#endif // G0ORX_FRONTPANEL
+#endif // EXCLUDE_BODE
                            };  //=================== AFP 03-30-24 V012 Bode Plot
 
 const char *CWFilter[] = { "0.8kHz", "1.0kHz", "1.3kHz", "1.8kHz", "2.0kHz", " Cancel " };
@@ -617,10 +620,12 @@ int (*functionPtr[])() = { &CWOptions, &RFOptions, &VFOSelect,
                            &EEPROMOptions, &AGCOptions, &SpectrumOptions,
                            &ButtonSetNoiseFloor, &MicGainSet, &MicOptions,
                            &EqualizerRecOptions, &EqualizerXmtOptions, &IQOptions,
-#if !defined(G0ORX_FRONTPANEL)
+#if !defined(EXCLUDE_BEARING)
                            &BearingMaps,
+#endif // EXCLUDE_BEARING
+#if !defined(EXCLUDE_BODE)
                            &BodeOptions
-#endif // G0ORX_FRONTPANEL
+#endif // EXCLUDE_BODE
                            };  //=================== AFP 03-30-24 V012 Bode Plot
 
 
@@ -647,8 +652,12 @@ const char *secondaryChoices[][14] = {
   { "On", "Off", "EQRcSet", "Cancel" },                                                                                     // index = 9                                                                                // EQ Rec         9
   { "On", "Off", "EQTxSet", "Cancel" },                                                                                     // EQ Trx         10
   { "Freq Cal", "CW PA Cal", "Rec Cal", "Xmit Cal", "SSB PA Cal", "Cancel" },                                               // Calibrate      11
-  { "Set Prefix", "Cancel" },                                                                                               // Bearing        12
+#if !defined(EXCLUDE_BEARING)  
+  { "Set Prefix", "Cancel" },
+#endif // EXCLUDE_BEARING
+#if !defined(EXCLUDE_BODE)                                                                                            // Bearing        12
   { "Run Bode Plot", "Set Start F.", "Set End F.", "Plot Ref.", "Cancel" }                                                 //=================== AFP 03-30-24 V012 Bode Plot                                                                                      //=================== AFP 04-12-24 V012 Attenuators                                                                                            // 13
+#endif // EXCLUDE_BODE
 };
 
 
@@ -796,6 +805,7 @@ RA8875 tft = RA8875(RA8875_CS, RA8875_RESET);
 
 SPISettings settingsA(70000000UL, MSBFIRST, SPI_MODE1);
 
+#if !defined(EXCLUDE_BODE)
 //=================== AFP 03-30-24 V012 Bode Plot variables
 
 float BodePlotValues[1000];     // Bode
@@ -829,7 +839,6 @@ float refLevelBode = -2;
 int replotFlag = 0;
 int lastCurrentFreqPos;
 int currentFreqPos;
-int valPin;
 int pushButtonSwitchIndex = -1;
 int endBodeFlag = 0;
 int doneViewing = 0;
@@ -839,6 +848,11 @@ int BodePlotFlag = 0;
 int plotBodeBandFlag = 0;
 float bodeResultRdB;
 int levelBodeChangeFlag;
+#endif // BODE
+
+
+int valPin;
+
 int currentRF_InAtten=0; //AFP 04-12-24
 int currentRF_OutAtten=0;
 
@@ -1098,7 +1112,7 @@ struct dispSc
   float32_t   offsetIncrement;
 };
 */
-dispSc displayScale[] =  //r *dbText,dBScale, pixelsPerDB, baseOffset, offsetIncrement
+struct dispSc displayScale[] =  //r *dbText,dBScale, pixelsPerDB, baseOffset, offsetIncrement
   {
     { "20 dB/", 10.0, 2, 24, 1.00 },
     { "10 dB/", 20.0, 4, 10, 0.50 },  //  JJP 7/14/23
@@ -2283,7 +2297,7 @@ int SetI2SFreq(int freq) {
   n2 = 1 + (24000000 * 27) / (freq * 256 * n1);
   if (n2 > 63) {
     // n2 must fit into a 6-bit field
-#ifdef DEBUG
+#if defined(DEBUG)
     Serial.printf("ERROR: n2 exceeds 63 - %d\n", n2);
 #endif
     return 0;
@@ -2579,6 +2593,12 @@ void Splash() {
   tft.setCursor(centerCall, YPIXELS / 2 + 160);
   tft.print(MY_CALL);
 
+#if defined(G0ORX_CAT)
+  tft.setFontScale(1);
+  tft.setCursor(0, YPIXELS / 4 + 150);
+  tft.print("Includes: USB CAT by John Melton, G0ORX");
+#endif
+
 #if defined(G0ORX_FRONTPANEL)
   tft.setFontScale(1);
   tft.setCursor(0, YPIXELS / 4 + 180);
@@ -2604,8 +2624,12 @@ void setup() {
   Serial.begin(9600);
 
   if (CrashReport) {
-    Serial.println(CrashReport);
+    Serial1.println(CrashReport);
   }
+
+#if defined(G0ORX_CAT)
+  SerialUSB1.begin(9600);
+#endif // G0ORX_CAT
 
   setSyncProvider(getTeensy3Time);  // get TIME from real time clock with 3V backup battery
   setTime(now());
@@ -2727,7 +2751,7 @@ void setup() {
   EEPROMStartup();                  // Original code
 
   syncEEPROM = 1;  // We've read current EEPROM values
-#ifdef DEBUG
+#if defined(DEBUG)
   EEPROMShow();
 #endif
 
@@ -2859,6 +2883,7 @@ void setup() {
   sdCardPresent = SDPresentCheck();  // JJP 7/18/23
   lastState = 1111;                  // To make sure the receiver will be configured on the first pass through.  KF5N September 3, 2023
   decodeStates = state0;             // Initialize the Morse decoder.
+
 }
 //============================================================== END setup() =================================================================
 //===============================================================================================================================
@@ -2882,6 +2907,10 @@ FASTRUN void loop()  // Replaced entire loop() with Greg's code  JJP  7/14/23
   long ditTimerOff;  //AFP 09-22-22
   long dahTimerOn;
 
+#if defined(G0ORX_CAT)
+  CATSerialEvent();
+#endif
+
   valPin = ReadSelectedPushButton();  // Poll UI push buttons
   if (valPin != BOGUS_PIN_READ) {     // If a button was pushed...
 
@@ -2900,7 +2929,7 @@ FASTRUN void loop()  // Replaced entire loop() with Greg's code  JJP  7/14/23
 
 
   //  State detection
-#if defined(G0ORX_FRONTPANEL)
+#if defined(G0ORX_FRONTPANEL) || defined(G0ORX_CAT)
   if (xmtMode == SSB_MODE && my_ptt == HIGH) radioState = SSB_RECEIVE_STATE;
   if (xmtMode == SSB_MODE && my_ptt == LOW) radioState = SSB_TRANSMIT_STATE;
 #else
@@ -2976,7 +3005,7 @@ FASTRUN void loop()  // Replaced entire loop() with Greg's code  JJP  7/14/23
       modeSelectOutExR.gain(0, powerOutSSB[currentBand]);  //AFP 10-21-22
       ShowTransmitReceiveStatus();
 
-#if defined(G0ORX_FRONTPANEL)
+#if defined(G0ORX_FRONTPANEL) || defined(G0ORX_CAT)
       while (my_ptt == LOW) {
 #else
       while (digitalRead(PTT) == LOW) {
@@ -2985,7 +3014,9 @@ FASTRUN void loop()  // Replaced entire loop() with Greg's code  JJP  7/14/23
 #if defined(G0ORX_FRONTPANEL)
         ExecuteButtonPress(ProcessButtonPress(ReadSelectedPushButton()));
 #endif // G0ORX_FRONTPANEL
-
+#if defined(G0ORX_CAT)
+        CATSerialEvent();
+#endif // G0ORX_CAT
       }
       Q_in_L_Ex.end();  // End Transmit Queue
       Q_in_R_Ex.end();

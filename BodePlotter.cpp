@@ -2,7 +2,7 @@
 #include "SDT.h"
 #endif
 
-#if !defined(G0ORX_FRONTPANEL)
+#if !defined(EXCLUDE_BODE)
 /*==================================
 Notes about the Bode Plotter code.
 * Most  of the Bode code is stand-alone, not using most of the resources of the T41 for things like Plotting, drawing the plot container, processing the signal, etc.
@@ -721,4 +721,4 @@ long MoveStopFreqBode() {
   return freqStopBode;
 }
 
-#endif // G0ORX_FRONTPANEL
+#endif // EXCLUDE_BODE
