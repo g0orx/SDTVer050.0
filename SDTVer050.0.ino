@@ -585,6 +585,37 @@ struct band bands[NUMBER_OF_BANDS] = {  //AFP Changed 1-30-21 // G0ORX Changed A
 // and changed "gainCorrection" to see the correct dBm value on all bands.
 // Calibration done with TinySA as signal generator with -73dBm levels (S9) at the FT8 frequencies
 // with V010 QSD with the 12V mod of the pre-amp
+
+#if defined(V12HWR)
+  475000,  472000,  479000, "630M", DEMOD_USB, 3000, 200, 1, HAM_BAND, 8.5, 20, 20,    // 630M
+  1850000, 1800000, 2000000, "160M", DEMOD_USB, 3000, 200, 1, HAM_BAND, 8.5, 20, 20,    // 160M
+#if defined(ITU_REGION) && ITU_REGION == 1
+  3700000, 3500000, 3800000, "80M", DEMOD_LSB, -200, -3000, 1, HAM_BAND, -2.0, 20, 20,
+  5351500, 5351500, 5366600, "60M", DEMOD_LSB, -200, -3000, 1, HAM_BAND, -2.0, 20, 20,  // 60M
+  7150000, 7000000, 7200000, "40M", DEMOD_LSB, -200, -3000, 1, HAM_BAND, -2.0, 20, 20,
+#elif defined(ITU_REGION) && ITU_REGION == 2
+  3700000, 3500000, 4000000, "80M", DEMOD_LSB, -200, -3000, 1, HAM_BAND, -2.0, 20, 20,
+  5351500, 5351500, 5366600, "60M", DEMOD_LSB, -200, -3000, 1, HAM_BAND, -2.0, 20, 20,  // 60M
+  7150000, 7000000, 7300000, "40M", DEMOD_LSB, -200, -3000, 1, HAM_BAND, -2.0, 20, 20,
+#elif defined(ITU_REGION) && ITU_REGION == 3
+  3700000, 3500000, 3900000, "80M", DEMOD_LSB, -200, -3000, 1, HAM_BAND, -2.0, 20, 20,
+  5351500, 5351500, 5366600, "60M", DEMOD_LSB, -200, -3000, 1, HAM_BAND, -2.0, 20, 20,  // 60M
+  7150000, 7000000, 7200000, "40M", DEMOD_LSB, -200, -3000, 1, HAM_BAND, -2.0, 20, 20,
+#endif
+  10125000, 10100000, 10150000, "30M", DEMOD_USB, 3000, 200, 1, HAM_BAND, 2.0, 20, 20,  // 30M
+  14200000, 14000000, 14350000, "20M", DEMOD_USB, 3000, 200, 1, HAM_BAND, 2.0, 20, 20,
+  18100000, 18068000, 18168000, "17M", DEMOD_USB, 3000, 200, 1, HAM_BAND, 2.0, 20, 20,
+  21200000, 21000000, 21450000, "15M", DEMOD_USB, 3000, 200, 1, HAM_BAND, 5.0, 20, 20,
+  24920000, 24890000, 24990000, "12M", DEMOD_USB, 3000, 200, 1, HAM_BAND, 6.0, 20, 20,
+  28350000, 28000000, 29700000, "10M", DEMOD_USB, 3000, 200, 1, HAM_BAND, 8.5, 20, 20,
+  50100000, 50000000, 54000000, "6M", DEMOD_USB, 3000, 200, 1, HAM_BAND, 8.5, 20, 20,   // 6M
+  70300000, 70000000, 72800000, "4M", DEMOD_USB, 3000, 200, 1, HAM_BAND, 8.5, 20, 20,   // 4M
+  142000000, 144000000, 148000000, "2M", DEMOD_USB, 3000, 200, 1, HAM_BAND, 8.5, 20, 20,   // 2M
+  222500000, 220000000, 225000000, "125CM", DEMOD_USB, 3000, 200, 1, HAM_BAND, 8.5, 20, 20,   // 125CM
+  435000000, 420000000, 450000000, "70CM",  DEMOD_USB, 3000, 200, 1, HAM_BAND, 8.5, 20, 20,   // 70CM
+  915000000, 902000000, 928000000, "33CM",  DEMOD_USB, 3000, 200, 1, HAM_BAND, 8.5, 20, 20,   // 33CM
+  1270000000, 1240000000, 1300000000, "23CM", DEMOD_USB, 3000, 200, 1, HAM_BAND, 8.5, 20, 20  // 23CM
+#else 
 #if defined(ITU_REGION) && ITU_REGION == 1
   3700000, 3500000, 3800000, "80M", DEMOD_LSB, -200, -3000, 1, HAM_BAND, -2.0, 20, 20,
   7150000, 7000000, 7200000, "40M", DEMOD_LSB, -200, -3000, 1, HAM_BAND, -2.0, 20, 20,
@@ -600,7 +631,29 @@ struct band bands[NUMBER_OF_BANDS] = {  //AFP Changed 1-30-21 // G0ORX Changed A
   21200000, 21000000, 21450000, "15M", DEMOD_USB, 3000, 200, 1, HAM_BAND, 5.0, 20, 20,
   24920000, 24890000, 24990000, "12M", DEMOD_USB, 3000, 200, 1, HAM_BAND, 6.0, 20, 20,
   28350000, 28000000, 29700000, "10M", DEMOD_USB, 3000, 200, 1, HAM_BAND, 8.5, 20, 20
+#endif // V12HWR
 };
+
+// G0ORX - moved the following to make easier when adding/removing bands
+#if defined(V12HWR)
+float32_t IQAmpCorrectionFactor[NUMBER_OF_BANDS] = { 1, 1, 1, 1, 1.024, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+float32_t IQPhaseCorrectionFactor[NUMBER_OF_BANDS] = { 0, 0, 0, 0, 0.007, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+float32_t IQXAmpCorrectionFactor[NUMBER_OF_BANDS] = { 1, 1, 1, 1, 1.097, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+float32_t IQXPhaseCorrectionFactor[NUMBER_OF_BANDS] = { 0, 0, 0, 0, 0.193, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+float32_t powerOutSSB[NUMBER_OF_BANDS] = { 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03 };
+float32_t powerOutCW[NUMBER_OF_BANDS] = { 0.17, 0.17, 0.017, 0.02, 0.02, 0.025, 0.03, 0.03, 0.039, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02 }; 
+float32_t CWPowerCalibrationFactor[NUMBER_OF_BANDS] = { 0.019, 0.019, 0.019, 0.019, 0.0190, .0190, .0190, .0190, .0190, .019, .019, .019, .019, .019, .019, .019, .019, .019 };
+float32_t SSBPowerCalibrationFactor[NUMBER_OF_BANDS] = { 0.008, 0.008, 0.008, 0.008, 0.008, 0.008, 0.008, 0.008, 0.008, 0.008, 0.008, 0.008, 0.008, 0.008, 0.008, 0.008, 0.008, 0.008 };
+#else
+float32_t IQAmpCorrectionFactor[NUMBER_OF_BANDS] = { 1, 1.024, 1, 1, 1, 1, 1 };
+float32_t IQPhaseCorrectionFactor[NUMBER_OF_BANDS] = { 0, 0.007, 0, 0, 0, 0, 0 };
+float32_t IQXAmpCorrectionFactor[NUMBER_OF_BANDS] = { 1, 1.097, 1, 1, 1, 1, 1 };
+float32_t IQXPhaseCorrectionFactor[NUMBER_OF_BANDS] = { 0, 0.193, 0, 0, 0, 0, 0 };
+float32_t powerOutSSB[NUMBER_OF_BANDS] = { 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03 };                       // AFP 10-28-22
+float32_t powerOutCW[NUMBER_OF_BANDS] = { 0.017, 0.02, 0.025, 0.03, 0.03, 0.039, 0.02 };                     // AFP 10-28-22
+float32_t CWPowerCalibrationFactor[NUMBER_OF_BANDS] = { 0.019, 0.0190, .0190, .0190, .0190, .0190, .019 };   //AFP 10-29-22
+float32_t SSBPowerCalibrationFactor[NUMBER_OF_BANDS] = { 0.008, 0.008, 0.008, 0.008, 0.008, 0.008, 0.008 };  //AFP 10-29-22  
+#endif
 
 const char *topMenus[] = { "CW Options", "RF Set", "VFO Select",
                            "EEPROM", "AGC", "Spectrum Options",
@@ -858,6 +911,9 @@ int currentRF_OutAtten=0;
 
 //=================== AFP 03-30-24 V012 Bode Plot end
 
+#if defined(G0ORX_AUDIO_DISPLAY)
+float32_t mic_audio_buffer[256];
+#endif // G0ORX_AUDIO_DISPLAY
 
 const uint32_t N_B_EX = 16;
 //================== Receive EQ Variables================= AFP 08-08-22
@@ -1860,10 +1916,6 @@ float32_t IIR_biquad_Zoom_FFT_Q_state[IIR_biquad_Zoom_FFT_N_stages * 4];
 float32_t inv_max_input;
 float32_t inv_out_target;
 
-float32_t IQAmpCorrectionFactor[7] = { 1, 1.024, 1, 1, 1, 1, 1 };
-float32_t IQPhaseCorrectionFactor[7] = { 0, 0.007, 0, 0, 0, 0, 0 };
-float32_t IQXAmpCorrectionFactor[7] = { 1, 1.097, 1, 1, 1, 1, 1 };
-float32_t IQXPhaseCorrectionFactor[7] = { 0, 0.193, 0, 0, 0, 0, 0 };
 
 /*float32_t IQAmpCorrectionFactorUSB[7]        = {1,1.057,1,1,1,1,1};
   float32_t IQPhaseCorrectionFactorUSB[7]      = {0,-0.02,0,0,0,0,0};
@@ -1991,10 +2043,6 @@ float32_t P_est_mult = 1.0 / (sqrtf(1.0 - P_est * P_est));
 
 float32_t phaseLO = 0.0;
 float32_t pop_ratio;
-float32_t powerOutSSB[7] = { 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03 };                       // AFP 10-28-22
-float32_t powerOutCW[7] = { 0.017, 0.02, 0.025, 0.03, 0.03, 0.039, 0.02 };                     // AFP 10-28-22
-float32_t CWPowerCalibrationFactor[7] = { 0.019, 0.0190, .0190, .0190, .0190, .0190, .019 };   //AFP 10-29-22
-float32_t SSBPowerCalibrationFactor[7] = { 0.008, 0.008, 0.008, 0.008, 0.008, 0.008, 0.008 };  //AFP 10-29-22       = 0.008;  //AFP 10-21-22
 float32_t Q_old = 0.2;
 float32_t Q_sum;
 float32_t DMAMEM R_BufferOffset[BUFFER_SIZE * N_B];
