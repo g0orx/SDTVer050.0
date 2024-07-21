@@ -151,6 +151,9 @@ int (*functionPtr[])() = { &CWOptions, &RFOptions, &VFOSelect,
       BandInformation();
       NCOFreq = 0L;
       DrawBandWidthIndicatorBar();  // AFP 10-20-22
+#if defined(G0ORX_FRONTPANEL)
+      UpdateVolumeField();
+#endif // G0ORX_FRONTPANEL
       //SetFreq();
       ShowSpectrum();
       break;
@@ -176,6 +179,9 @@ int (*functionPtr[])() = { &CWOptions, &RFOptions, &VFOSelect,
       BandInformation();
       NCOFreq = 0L;
       DrawBandWidthIndicatorBar();  //AFP 10-20-22
+#if defined(G0ORX_FRONTPANEL)
+      UpdateVolumeField();
+#endif // G0ORX_FRONTPANEL
       break;
 
     case SET_MODE:  // 6
@@ -233,8 +239,14 @@ int (*functionPtr[])() = { &CWOptions, &RFOptions, &VFOSelect,
       break;
 
     case UNUSED_4:  // 17
- 
-      
+      // temp use as PTT
+#if defined(G0ORX_FRONTPANEL)
+      if(my_ptt==HIGH) {
+        my_ptt=LOW;
+      } else {
+        my_ptt=HIGH;
+      }
+#endif
       break;
 
 #if defined(G0ORX_FRONTPANEL)

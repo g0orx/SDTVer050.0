@@ -1,6 +1,8 @@
 #ifndef BEENHERE
 #define BEENHERE
 
+#define USE_JSON
+
 //======================================== User section that might need to be changed ===================================
 #include "MyConfigurationFile.h"                                          // This file name should remain unchanged
 #define VERSION                     "V050.0"                              // Change this for updates. If you make this longer than 9 characters, brace yourself for surprises
@@ -239,7 +241,7 @@ extern struct maps myMapFiles[];
 #define SMETER_BAR_HEIGHT     18
 #define SMETER_BAR_LENGTH     180
 #define SPECTRUM_NOISE_FLOOR  (SPECTRUM_TOP_Y + SPECTRUM_HEIGHT - 3)
-#define TIME_X                (XPIXELS * 0.73)                            // Upper-left corner for time
+#define TIME_X                (XPIXELS * 0.83)                            // Upper-left corner for time --G0ORX
 #define TIME_Y                (YPIXELS * 0.07)
 #define WHICH_SIDEBAND_X      (XPIXELS * 0.70)
 #define WHICH_SIDEBAND_Y      (YPIXELS * 0.20)
@@ -622,7 +624,31 @@ extern int radioState, lastState;  // Used by the loop to monitor current state.
 #define CW_MESSAGE_WIDTH            MAX_WATERFALL_WIDTH   // 512
 #define CW_MESSAGE_HEIGHT           16                    // tft.getFontHeight()
 
-//#ifdef USE_W7PUA
+#if defined(V12HWR)
+#define BAND_630M                 0
+#define BAND_160M                 1
+#define BAND_80M                  2
+#define BAND_60M                  3
+#define BAND_40M                  4
+#define BAND_30M                  5
+#define BAND_20M                  6
+#define BAND_17M                  7
+#define BAND_15M                  8
+#define BAND_12M                  9
+#define BAND_10M                 10
+#define BAND_6M                  11
+#define BAND_4M                  12
+#define BAND_2M                  13
+#define BAND_125CM               14
+#define BAND_70CM                15
+#define BAND_33CM                16
+#define BAND_23CM                17
+
+#define FIRST_BAND                BAND_630M    //WJS 2-18-24
+#define LAST_BAND                 BAND_23CM    //WJS 2-18-24
+#define NUMBER_OF_BANDS           18           //WJS 2-18-24
+
+#else
 
 #define BAND_80M                  0
 #define BAND_40M                  1
@@ -635,6 +661,7 @@ extern int radioState, lastState;  // Used by the loop to monitor current state.
 #define FIRST_BAND                BAND_80M
 #define LAST_BAND                 BAND_10M    //AFP 1-28-21
 #define NUMBER_OF_BANDS           7           //AFP 1-28-21
+#endif // V12HWR
 //#define STARTUP_BAND              BAND_40M    //AFP 1-28-21
 
 //#endif
@@ -2229,8 +2256,10 @@ void Codec_gain();
 uint16_t Color565(uint8_t r, uint8_t g, uint8_t b);
 void ControlFilterF();
 void CopyEEPROM();
+#if !defined(USE_JSON)
 int  CopyEEPROMToSD();
 int  CopySDToEEPROM();
+#endif // USE_JSON
 int  CreateMapList(char ptrMaps[10][50], int *count);
 int  CWOptions();
 void CW_DecodeLevelDisplay();
@@ -2470,5 +2499,11 @@ int  Xmit_IQ_Cal(); //AFP 09-21-22
 
 void ZoomFFTPrep();
 void ZoomFFTExe(uint32_t blockSize);
+
+#if defined(G0ORX_AUDIO_DISPLAY)
+ extern float32_t mic_audio_buffer[];
+ void ShowTXAudio();
+ void ClearTXAudio();
+#endif // G0ORX_AUDIO_DISPLAY
 
 #endif

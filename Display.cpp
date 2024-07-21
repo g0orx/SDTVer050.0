@@ -667,6 +667,13 @@ void ShowCurrentPowerSetting() {
     // show frequency
 *****/
 void FormatFrequency(long freq, char *freqBuffer) {
+#if defined(V12HWR)
+  if(freq>=1000000) {
+    sprintf(freqBuffer,"%4ld.%03ld.%03ld",freq/(long)1000000,(freq%(long)1000000)/(long)1000,freq%(long)1000);
+  } else {
+    sprintf(freqBuffer,"     %03ld.%03ld",freq%(long)1000000/(long)1000,freq%(long)1000);
+  }
+#else // V12HDW
   char outBuffer[15];
   int i;
   int len;
@@ -753,6 +760,7 @@ void FormatFrequency(long freq, char *freqBuffer) {
   }
   freqBuffer[i] = '\0';                      // Make it a string
 */
+#endif // V12HDW
 }
 
 /*****
@@ -783,14 +791,15 @@ FASTRUN void ShowFrequency() {
     } else {
       tft.setTextColor(RA8875_GREEN);  // In US band
     }
-    tft.fillRect(0, FREQUENCY_Y - 14, tft.getFontWidth() * 11, tft.getFontHeight(), RA8875_BLACK);  // JJP 7/15/23
+    tft.fillRect(0, FREQUENCY_Y - 14, tft.getFontWidth() * 13, tft.getFontHeight(), RA8875_BLACK);  // JJP 7/15/23 // G0ORX 2/20/24
     tft.setCursor(0, FREQUENCY_Y - 17);                                                             // To adjust for Greg's font change jjp 7/14/23
     tft.print(freqBuffer);                                                                          // Show VFO_A
     //tft.setFont(&FreeMonoBold18pt7b);               // KF5N
     //    tft.setFontScale(1.5);                      // KF5N
-    tft.setFontScale(1, 2);  // JJP 7/15/23
+    tft.setCursor(tft.getFontWidth() * 13, FREQUENCY_Y - 14); // G0ORX 2/20/24
+    tft.setFontScale(1, 1);  // JJP 7/15/23 // G0ORX (was 1,2)
     tft.setTextColor(RA8875_LIGHT_GREY);
-    tft.setCursor(FREQUENCY_X_SPLIT + 60, FREQUENCY_Y - 15);
+    //tft.setCursor(FREQUENCY_X_SPLIT + 60, FREQUENCY_Y - 15); // G0ORX
     FormatFrequency(currentFreqB, freqBuffer);
     tft.print(freqBuffer);
   } else {  // Show VFO_B
@@ -799,7 +808,7 @@ FASTRUN void ShowFrequency() {
     //tft.setFontScale(2);   //KF5N   JJP 7/15/23
     tft.setFontScale(3, 2);                                                                                              // JJP 7/15/23
                                                                                                                          //  tft.fillRect(FREQUENCY_X_SPLIT - 60, FREQUENCY_Y - 12, VFOB_PIXEL_LENGTH, FREQUENCY_PIXEL_HI, RA8875_BLACK);  //JJP 7/15/23
-    tft.fillRect(FREQUENCY_X_SPLIT - 60, FREQUENCY_Y - 14, tft.getFontWidth() * 10, tft.getFontHeight(), RA8875_BLACK);  //JJP 7/15/23
+    tft.fillRect(FREQUENCY_X_SPLIT - 60, FREQUENCY_Y - 14, tft.getFontWidth() * 13, tft.getFontHeight(), RA8875_BLACK);  //JJP 7/15/23 // G0ORX 2/20/24
     tft.setCursor(FREQUENCY_X_SPLIT - 60, FREQUENCY_Y - 12);
     if (TxRxFreq < bands[currentBandB].fBandLow || TxRxFreq > bands[currentBandB].fBandHigh) {
       tft.setTextColor(RA8875_RED);
@@ -1779,6 +1788,9 @@ void ShowTransmitReceiveStatus() {
     FrontPanelSetLed(0,1);
     FrontPanelSetLed(1,0);
 #endif // G0ORX_FRONTPANEL
+#ifdef G0ORX_AUDIO_DISPLAY 
+    ClearTXAudio();
+#endif
   } else {
     tft.fillRect(X_R_STATUS_X, X_R_STATUS_Y, 55, 25, RA8875_GREEN);
     tft.setCursor(X_R_STATUS_X + 4, X_R_STATUS_Y - 5);
@@ -1817,3 +1829,41 @@ void UpdateSDIndicator(int present) {
   tft.print("  SD  ");  
   */
 }
+
+#ifdef G0ORX_AUDIO_DISPLAY
+static float32_t audio_sample[256];
+
+void ShowTXAudio() {
+    int x;
+
+    float32_t max_sample=mic_audio_buffer[0];
+    float32_t min_sample=mic_audio_buffer[0];
+
+
+    for(int i=1;i<256;i++) {
+      if(mic_audio_buffer[i]>max_sample) max_sample=mic_audio_buffer[i];
+      if(mic_audio_buffer[i]<min_sample) min_sample=mic_audio_buffer[i];
+    }
+
+    //scroll left
+    for(int i=0;i<251;i++) {
+      x = BAND_INDICATOR_X - 8 + i;
+      tft.drawLine(x, 188+audio_sample[i], x, 188-audio_sample[i], RA8875_BLACK);
+      audio_sample[i]=audio_sample[i+1];
+      tft.drawLine(x, 188+audio_sample[i], x, 188-audio_sample[i], RA8875_YELLOW);
+    }
+    x = BAND_INDICATOR_X - 8 + 251;
+    tft.drawLine(x, 188+audio_sample[251], x, 188-audio_sample[251], RA8875_BLACK);
+    audio_sample[251]=max_sample * 100;
+    tft.drawLine(x, 188+audio_sample[251], x, 188-audio_sample[251], RA8875_YELLOW);
+
+}
+
+void ClearTXAudio() {
+  tft.fillRect(BAND_INDICATOR_X - 8, AUDIO_SPECTRUM_TOP + 1, 252, 116, RA8875_BLACK);
+  for(int i=1;i<256;i++) {
+    audio_sample[i]=0.0;
+  }
+}
+#endif
+

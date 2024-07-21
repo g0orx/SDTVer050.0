@@ -79,6 +79,10 @@ void ExciterIQData()
 
     arm_copy_f32 (float_buffer_L_EX, float_buffer_R_EX, 256);
 
+#ifdef G0ORX_AUDIO_DISPLAY
+    arm_copy_f32 (float_buffer_R_EX, mic_audio_buffer, 256);
+#endif
+
     // =========================    End CW Xmit
     //--------------  Hilbert Transformers
 

@@ -203,6 +203,12 @@ FLASHMEM void EEPROMRead() {
   favoriteFrequencies[11] = EEPROMData.favoriteFreqs[11];
   favoriteFrequencies[12] = EEPROMData.favoriteFreqs[12];
 
+  // G0ORX
+  for (int i = 0; i < NUMBER_OF_BANDS; i++) {
+    lastFrequencies[i][0] = EEPROMData.lastFrequencies[i][0];
+    lastFrequencies[i][1] = EEPROMData.lastFrequencies[i][1];
+  }
+/*
   lastFrequencies[0][0] = EEPROMData.lastFrequencies[0][0];
   lastFrequencies[1][0] = EEPROMData.lastFrequencies[1][0];
   lastFrequencies[2][0] = EEPROMData.lastFrequencies[2][0];
@@ -218,6 +224,7 @@ FLASHMEM void EEPROMRead() {
   lastFrequencies[4][1] = EEPROMData.lastFrequencies[4][1];
   lastFrequencies[5][1] = EEPROMData.lastFrequencies[5][1];
   lastFrequencies[6][1] = EEPROMData.lastFrequencies[6][1];
+*/
 
   centerFreq = EEPROMData.lastFrequencies[currentBand][activeVFO];  // 4 bytes
   TxRxFreq = centerFreq;  // Need to assign TxRxFreq here or numerous subtle frequency bugs will happen.  KF5N August 7, 2023
@@ -766,6 +773,14 @@ void GetFavoriteFrequency() {
       currentBand2 = BAND_12M;
     } else if (centerFreq >= bands[BAND_10M].fBandLow && centerFreq <= bands[BAND_10M].fBandHigh) {
       currentBand2 = BAND_10M;
+#if defined(V12HWR)
+    } else if (centerFreq >= bands[BAND_6M].fBandLow && centerFreq <= bands[BAND_6M].fBandHigh) {
+      currentBand2 = BAND_6M;
+    } else if (centerFreq >= bands[BAND_4M].fBandLow && centerFreq <= bands[BAND_4M].fBandHigh) {
+      currentBand2 = BAND_4M;
+    } else if (centerFreq >= bands[BAND_2M].fBandLow && centerFreq <= bands[BAND_2M].fBandHigh) {
+      currentBand2 = BAND_2M;
+#endif
     }
     currentBand = currentBand2;
 
@@ -910,6 +925,11 @@ FLASHMEM void CopyEEPROM() {
     EEPROMData.lastFrequencies[4][1] = 21060000L;  // 15
     EEPROMData.lastFrequencies[5][1] = 24906000L;  // 12
     EEPROMData.lastFrequencies[6][1] = 28060000L;  // 10
+#if defined(V12HWR)
+    EEPROMData.lastFrequencies[7][1] = 50060000L;  // 6
+    EEPROMData.lastFrequencies[8][1] = 70060000L;  // 4
+    EEPROMData.lastFrequencies[9][1] = 145600000L; // 2
+#endif // V12HWR
   } else {
     for (int i = 0; i < NUMBER_OF_BANDS; i++) {
       lastFrequencies[i][0] = EEPROMData.lastFrequencies[i][0];
@@ -956,6 +976,7 @@ FLASHMEM void CopyEEPROM() {
 *****/
 
 FLASHMEM void EEPROMSaveDefaults2() {
+  Serial.println(String(__FUNCTION__));
   strcpy(EEPROMData.versionSettings, EEPROMSetVersion());  // Update version
 
   EEPROMData.AGCMode = 1;
@@ -982,9 +1003,9 @@ FLASHMEM void EEPROMSaveDefaults2() {
 
   EEPROMData.activeVFO = 0;      // 2 bytes, 0 = VFOa
   EEPROMData.freqIncrement = 5;  // 4 bytes
-  EEPROMData.currentBand = 1;    // 4 bytes
-  EEPROMData.currentBandA = 1;   // 4 bytes
-  EEPROMData.currentBandB = 1;   // 4 bytes
+  EEPROMData.currentBand = BAND_40M;    // 4 bytes // G0ORX changed from 1
+  EEPROMData.currentBandA = BAND_40M;   // 4 bytes // G0ORX changed from 1
+  EEPROMData.currentBandB = BAND_40M;   // 4 bytes // G0ORX changed from 1
   //DB2OO, 23-AUG-23 7.1MHz for Region 1
 #if defined(ITU_REGION) && ITU_REGION==1
   EEPROMData.currentFreqA = 7100000;
@@ -1038,6 +1059,26 @@ FLASHMEM void EEPROMSaveDefaults2() {
   EEPROMData.omegaN = 0.0;       // 4 bytes
   EEPROMData.pll_fmax = 4000.0;  // 4 bytes
 
+#if defined(V12HWR)
+  EEPROMData.powerOutCW[0] = 0.188;  // G0ORX
+  EEPROMData.powerOutCW[1] = 0.188;  // G0ORX
+  EEPROMData.powerOutCW[2] = 0.188;  // 4 bytes  AFP 10-21-22
+  EEPROMData.powerOutCW[3] = 0.21;   // 4 bytes  AFP 10-21-22
+  EEPROMData.powerOutCW[4] = 0.34;   // 4 bytes  AFP 10-21-22
+  EEPROMData.powerOutCW[5] = 0.44;   // 4 bytes  AFP 10-21-22
+  EEPROMData.powerOutCW[6] = 0.31;   // 4 bytes  AFP 10-21-22
+  EEPROMData.powerOutCW[7] = 0.31;   // 4 bytes  AFP 10-21-22
+  EEPROMData.powerOutCW[8] = 0.31;   // 4 bytes  AFP 10-21-22
+  EEPROMData.powerOutCW[9] = 0.31;    // G0ORX 4 bytes
+  EEPROMData.powerOutCW[10] = 0.31;   // G0ORX 4 bytes
+  EEPROMData.powerOutCW[11] = 0.31;   // G0ORX 4 bytes
+  EEPROMData.powerOutCW[12] = 0.31;   // G0ORX 4 bytes
+  EEPROMData.powerOutCW[13] = 0.31;   // G0ORX 4 bytes
+  EEPROMData.powerOutCW[14] = 0.31;   // G0ORX 4 bytes
+  EEPROMData.powerOutCW[15] = 0.31;   // G0ORX 4 bytes
+  EEPROMData.powerOutCW[16] = 0.31;   // G0ORX 4 bytes
+  EEPROMData.powerOutCW[17] = 0.31;   // G0ORX 4 bytes
+#else
   EEPROMData.powerOutCW[0] = 0.188;  // 4 bytes  AFP 10-21-22
   EEPROMData.powerOutCW[1] = 0.21;   // 4 bytes  AFP 10-21-22
   EEPROMData.powerOutCW[2] = 0.34;   // 4 bytes  AFP 10-21-22
@@ -1045,7 +1086,28 @@ FLASHMEM void EEPROMSaveDefaults2() {
   EEPROMData.powerOutCW[4] = 0.31;   // 4 bytes  AFP 10-21-22
   EEPROMData.powerOutCW[5] = 0.31;   // 4 bytes  AFP 10-21-22
   EEPROMData.powerOutCW[6] = 0.31;   // 4 bytes  AFP 10-21-22
+#endif // V12HWR
 
+#if defined(V12HWR)
+  EEPROMData.powerOutSSB[0] = 0.188;  // G0ORX
+  EEPROMData.powerOutSSB[1] = 0.188;  // G0ORX
+  EEPROMData.powerOutSSB[2] = 0.188;  // 4 bytes  AFP 10-21-22
+  EEPROMData.powerOutSSB[3] = 0.11;   // 4 bytes  AFP 10-21-22
+  EEPROMData.powerOutSSB[4] = 0.188;  // 4 bytes  AFP 10-21-22
+  EEPROMData.powerOutSSB[5] = 0.21;   // 4 bytes  AFP 10-21-22
+  EEPROMData.powerOutSSB[6] = 0.23;   // 4 bytes  AFP 10-21-22
+  EEPROMData.powerOutSSB[7] = 0.23;   // 4 bytes  AFP 10-21-22
+  EEPROMData.powerOutSSB[8] = 0.24;   // 4 bytes  AFP 10-21-22
+  EEPROMData.powerOutSSB[9] = 0.24;   // G0ORX 4 bytes
+  EEPROMData.powerOutSSB[10] = 0.24;   // G0ORX 4 bytes
+  EEPROMData.powerOutSSB[11] = 0.24;   // G0ORX 4 bytes
+  EEPROMData.powerOutSSB[12] = 0.24;   // G0ORX 4 bytes
+  EEPROMData.powerOutSSB[13] = 0.24;   // G0ORX 4 bytes
+  EEPROMData.powerOutSSB[14] = 0.24;   // G0ORX 4 bytesE
+  EEPROMData.powerOutSSB[15] = 0.24;   // G0ORX 4 bytes
+  EEPROMData.powerOutSSB[16] = 0.24;   // G0ORX 4 bytes
+  EEPROMData.powerOutSSB[17] = 0.24;   // G0ORX 4 bytes
+#else
   EEPROMData.powerOutSSB[0] = 0.188;  // 4 bytes  AFP 10-21-22
   EEPROMData.powerOutSSB[1] = 0.11;   // 4 bytes  AFP 10-21-22
   EEPROMData.powerOutSSB[2] = 0.188;  // 4 bytes  AFP 10-21-22
@@ -1053,7 +1115,28 @@ FLASHMEM void EEPROMSaveDefaults2() {
   EEPROMData.powerOutSSB[4] = 0.23;   // 4 bytes  AFP 10-21-22
   EEPROMData.powerOutSSB[5] = 0.23;   // 4 bytes  AFP 10-21-22
   EEPROMData.powerOutSSB[6] = 0.24;   // 4 bytes  AFP 10-21-22
+#endif // V12HWR
 
+#if defined(V12HWR)
+  EEPROMData.CWPowerCalibrationFactor[0] = 0.023;  //G0ORX
+  EEPROMData.CWPowerCalibrationFactor[1] = 0.023;  //G0ORX
+  EEPROMData.CWPowerCalibrationFactor[2] = 0.023;  //AFP 10-29-22
+  EEPROMData.CWPowerCalibrationFactor[3] = 0.023;  //AFP 10-29-22
+  EEPROMData.CWPowerCalibrationFactor[4] = 0.038;  //AFP 10-29-22
+  EEPROMData.CWPowerCalibrationFactor[5] = 0.052;  //AFP 10-29-22
+  EEPROMData.CWPowerCalibrationFactor[6] = 0.051;  //AFP 10-29-22
+  EEPROMData.CWPowerCalibrationFactor[7] = 0.028;  //AFP 10-29-22
+  EEPROMData.CWPowerCalibrationFactor[8] = 0.028;  //AFP 10-29-22
+  EEPROMData.CWPowerCalibrationFactor[9] = 0.028;  //G0ORX
+  EEPROMData.CWPowerCalibrationFactor[10] = 0.028;  //G0ORX
+  EEPROMData.CWPowerCalibrationFactor[11] = 0.028;  //G0ORX
+  EEPROMData.CWPowerCalibrationFactor[12] = 0.028;  //G0ORX
+  EEPROMData.CWPowerCalibrationFactor[13] = 0.028;  //G0ORX
+  EEPROMData.CWPowerCalibrationFactor[14] = 0.028;  //G0ORX
+  EEPROMData.CWPowerCalibrationFactor[15] = 0.028;  //G0ORX
+  EEPROMData.CWPowerCalibrationFactor[16] = 0.028;  //G0ORX
+  EEPROMData.CWPowerCalibrationFactor[17] = 0.028;  //G0ORX
+#else
   EEPROMData.CWPowerCalibrationFactor[0] = 0.023;  //AFP 10-29-22
   EEPROMData.CWPowerCalibrationFactor[1] = 0.023;  //AFP 10-29-22
   EEPROMData.CWPowerCalibrationFactor[2] = 0.038;  //AFP 10-29-22
@@ -1061,46 +1144,36 @@ FLASHMEM void EEPROMSaveDefaults2() {
   EEPROMData.CWPowerCalibrationFactor[4] = 0.051;  //AFP 10-29-22
   EEPROMData.CWPowerCalibrationFactor[5] = 0.028;  //AFP 10-29-22
   EEPROMData.CWPowerCalibrationFactor[6] = 0.028;  //AFP 10-29-22
+#endif // V12HWR
 
+#if defined(V12HWR)
   EEPROMData.SSBPowerCalibrationFactor[0] = 0.017;  //AFP 10-29-22
-  EEPROMData.SSBPowerCalibrationFactor[1] = 0.019;  //AFP 10-29-22
+  EEPROMData.SSBPowerCalibrationFactor[1] = 0.017;  //AFP 10-29-22
   EEPROMData.SSBPowerCalibrationFactor[2] = 0.017;  //AFP 10-29-22
   EEPROMData.SSBPowerCalibrationFactor[3] = 0.019;  //AFP 10-29-22
-  EEPROMData.SSBPowerCalibrationFactor[4] = 0.021;  //AFP 10-29-22
-  EEPROMData.SSBPowerCalibrationFactor[5] = 0.020;  //AFP 10-29-22
-  EEPROMData.SSBPowerCalibrationFactor[6] = 0.022;  //AFP 10-29-22
+  EEPROMData.SSBPowerCalibrationFactor[4] = 0.017;  //AFP 10-29-22
+  EEPROMData.SSBPowerCalibrationFactor[5] = 0.019;  //AFP 10-29-22
+  EEPROMData.SSBPowerCalibrationFactor[6] = 0.021;  //AFP 10-29-22
+  EEPROMData.SSBPowerCalibrationFactor[7] = 0.020;  //AFP 10-29-22
+  EEPROMData.SSBPowerCalibrationFactor[8] = 0.022;  //AFP 10-29-22
+  EEPROMData.SSBPowerCalibrationFactor[9] = 0.022;  //G0ORX
+  EEPROMData.SSBPowerCalibrationFactor[10] = 0.022;  //G0ORX
+  EEPROMData.SSBPowerCalibrationFactor[11] = 0.022;  //G0ORX
+  EEPROMData.SSBPowerCalibrationFactor[12] = 0.022;  //G0ORX
+  EEPROMData.SSBPowerCalibrationFactor[13] = 0.022;  //G0ORX
+  EEPROMData.SSBPowerCalibrationFactor[14] = 0.022;  //G0ORX
+  EEPROMData.SSBPowerCalibrationFactor[15] = 0.022;  //G0ORX
+  EEPROMData.SSBPowerCalibrationFactor[16] = 0.022;  //G0ORX
+  EEPROMData.SSBPowerCalibrationFactor[17] = 0.022;  //G0ORX
+#endif // V12HWR
 
-  EEPROMData.IQAmpCorrectionFactor[0] = 1.0;
-  EEPROMData.IQAmpCorrectionFactor[1] = 1.0;
-  EEPROMData.IQAmpCorrectionFactor[2] = 1.0;
-  EEPROMData.IQAmpCorrectionFactor[3] = 1.0;
-  EEPROMData.IQAmpCorrectionFactor[4] = 1.0;
-  EEPROMData.IQAmpCorrectionFactor[5] = 1.0;
-  EEPROMData.IQAmpCorrectionFactor[6] = 1.0;
-
-  EEPROMData.IQPhaseCorrectionFactor[0] = 0.0;
-  EEPROMData.IQPhaseCorrectionFactor[1] = 0.0;
-  EEPROMData.IQPhaseCorrectionFactor[2] = 0.0;
-  EEPROMData.IQPhaseCorrectionFactor[3] = 0.0;
-  EEPROMData.IQPhaseCorrectionFactor[4] = 0.0;
-  EEPROMData.IQPhaseCorrectionFactor[5] = 0.0;
-  EEPROMData.IQPhaseCorrectionFactor[6] = 0.0;
-
-  EEPROMData.IQXAmpCorrectionFactor[0] = 1.0;
-  EEPROMData.IQXAmpCorrectionFactor[1] = 1.0;
-  EEPROMData.IQXAmpCorrectionFactor[2] = 1.0;
-  EEPROMData.IQXAmpCorrectionFactor[3] = 1.0;
-  EEPROMData.IQXAmpCorrectionFactor[4] = 1.0;
-  EEPROMData.IQXAmpCorrectionFactor[5] = 1.0;
-  EEPROMData.IQXAmpCorrectionFactor[6] = 1.0;
-
-  EEPROMData.IQXPhaseCorrectionFactor[0] = 0.0;
-  EEPROMData.IQXPhaseCorrectionFactor[1] = 0.0;
-  EEPROMData.IQXPhaseCorrectionFactor[2] = 0.0;
-  EEPROMData.IQXPhaseCorrectionFactor[3] = 0.0;
-  EEPROMData.IQXPhaseCorrectionFactor[4] = 0.0;
-  EEPROMData.IQXPhaseCorrectionFactor[5] = 0.0;
-  EEPROMData.IQXPhaseCorrectionFactor[6] = 0.0;
+  // simplified - G0ORX
+  for(int i=0;i<NUMBER_OF_BANDS;i++) {
+    EEPROMData.IQAmpCorrectionFactor[i] = 1.0;
+    EEPROMData.IQPhaseCorrectionFactor[i] = 0.0;
+    EEPROMData.IQXAmpCorrectionFactor[i] = 1.0;
+    EEPROMData.IQXPhaseCorrectionFactor[i] = 0.0;
+  }
 
   EEPROMData.favoriteFreqs[0] = 3560000L;  // These are CW/SSB calling frequencies for HF bands
   EEPROMData.favoriteFreqs[1] = 3690000L;
@@ -1116,13 +1189,45 @@ FLASHMEM void EEPROMSaveDefaults2() {
   EEPROMData.favoriteFreqs[11] = 10000000L;
   EEPROMData.favoriteFreqs[12] = 15000000L;
 
+#if defined(V12HWR)
+  EEPROMData.lastFrequencies[0][0] = 475000L; //475000L;
+  EEPROMData.lastFrequencies[1][0] = 1825000L; //1825000L;
+#if defined(ITU_REGION) && ITU_REGION==1  
+  EEPROMData.lastFrequencies[2][0] = 3690000L; //3985000L;   // 80 Phone
+  EEPROMData.lastFrequencies[3][0] = 5354000L; //5354000L;   // 60 Phone
+  EEPROMData.lastFrequencies[4][0] = 7090000L; //7200000L;   // 40
+  EEPROMData.lastFrequencies[5][0] = 10120000L; //10120000L;   // 30
+  EEPROMData.lastFrequencies[6][0] = 14285000L;  // 20
+  EEPROMData.lastFrequencies[7][0] = 18130000L;  // 17
+  EEPROMData.lastFrequencies[8][0] = 21285000L; //21385000L;  // 15
+  EEPROMData.lastFrequencies[9][0] = 24950000L;  // 12
+  EEPROMData.lastFrequencies[10][0] = 28365000L; //28385800L;  // 10
+#else
+  EEPROMData.lastFrequencies[2][0] = 3985000L;   // 80 Phone
+  EEPROMData.lastFrequencies[3][0] = 5354000L;   //5354000L
+  EEPROMData.lastFrequencies[4][0] = 7200000L;   // 40
+  EEPROMData.lastFrequencies[5][0] = 10120000L; //10120000L;   // 30
+  EEPROMData.lastFrequencies[6][0] = 14285000L;  // 50
+  EEPROMData.lastFrequencies[7][0] = 18130000L;  // 17
+  EEPROMData.lastFrequencies[8][0] = 21385000L;  // 15
+  EEPROMData.lastFrequencies[9][0] = 24950000L;  // 12
+  EEPROMData.lastFrequencies[10][0] = 28385800L;  // 10
+#endif // ITU_REGION
+  EEPROMData.lastFrequencies[11][0] = 50300000L; // 6
+  EEPROMData.lastFrequencies[12][0] = 70100000L; // 4
+  EEPROMData.lastFrequencies[13][0] = 144300000L; // 2
+  EEPROMData.lastFrequencies[14][0] = 222500000L; // 125cm
+  EEPROMData.lastFrequencies[15][0] = 435000000L; // 70cm
+  EEPROMData.lastFrequencies[16][0] = 915000000L; // 33cm
+  EEPROMData.lastFrequencies[17][0] = 1270000000L; // 23cm
+#else
   //DB2OO, 23-AUG-23: Region 1 freqs (from https://qrper.com/qrp-calling-frequencies/)
 #if defined(ITU_REGION) && ITU_REGION==1  
   EEPROMData.lastFrequencies[0][0] = 3690000L; //3985000L;   // 80 Phone
   EEPROMData.lastFrequencies[1][0] = 7090000L; //7200000L;   // 40
   EEPROMData.lastFrequencies[2][0] = 14285000L;  // 50
   EEPROMData.lastFrequencies[3][0] = 18130000L;  // 17
-  EEPROMData.lastFrequencies[4][0] = 21285000L; //21385000L;  // 15
+  EEPROMData.lastFrequencies[4][0] = 21285000L; //21385000L;  // 15lastFreq
   EEPROMData.lastFrequencies[5][0] = 24950000L;  // 12
   EEPROMData.lastFrequencies[6][0] = 28365000L; //28385800L;  // 10
 #else
@@ -1134,7 +1239,28 @@ FLASHMEM void EEPROMSaveDefaults2() {
   EEPROMData.lastFrequencies[5][0] = 24950000L;  // 12
   EEPROMData.lastFrequencies[6][0] = 28385800L;  // 10
 #endif
+#endif // V12HWR
 
+#if defined(V12HWR)
+  EEPROMData.lastFrequencies[0][1] = 475000L;   // 630 CW
+  EEPROMData.lastFrequencies[1][1] = 1805000L;   // 160 CW
+  EEPROMData.lastFrequencies[2][1] = 3560000L;   // 80 CW
+  EEPROMData.lastFrequencies[3][1] = 5354000L;   // 60 CW
+  EEPROMData.lastFrequencies[4][1] = 7030000L;   // 40
+  EEPROMData.lastFrequencies[5][1] = 10120000L;   // 30
+  EEPROMData.lastFrequencies[6][1] = 14060000L;  // 20
+  EEPROMData.lastFrequencies[7][1] = 18096000L;  // 17
+  EEPROMData.lastFrequencies[8][1] = 21060000L;  // 15
+  EEPROMData.lastFrequencies[9][1] = 24906000L;  // 12
+  EEPROMData.lastFrequencies[10][1] = 28060000L;  // 10
+  EEPROMData.lastFrequencies[11][1] = 50300000L; // 6
+  EEPROMData.lastFrequencies[12][1] = 70100000L; // 4
+  EEPROMData.lastFrequencies[13][1] = 144300000L; // 2
+  EEPROMData.lastFrequencies[14][1] = 222500000L;  // 125cm
+  EEPROMData.lastFrequencies[15][1] = 435000000L; // 70cm
+  EEPROMData.lastFrequencies[16][1] = 915000000L; // 33cm
+  EEPROMData.lastFrequencies[17][1] = 1270000000L; // 23cm
+#else
   EEPROMData.lastFrequencies[0][1] = 3560000L;   // 80 CW
   EEPROMData.lastFrequencies[1][1] = 7030000L;   // 40
   EEPROMData.lastFrequencies[2][1] = 14060000L;  // 20
@@ -1142,6 +1268,7 @@ FLASHMEM void EEPROMSaveDefaults2() {
   EEPROMData.lastFrequencies[4][1] = 21060000L;  // 15
   EEPROMData.lastFrequencies[5][1] = 24906000L;  // 12
   EEPROMData.lastFrequencies[6][1] = 28060000L;  // 10
+#endif // V12HWR
 
   EEPROMData.centerFreq = 7150000;
 
@@ -1168,6 +1295,7 @@ FLASHMEM void EEPROMSaveDefaults2() {
   
 }
 
+#if !defined(USE_JSON)
 /*****
   Purpose: Read the EEPROM data from the SD card and assign it to the
            proper EEPROM members.
@@ -1808,7 +1936,7 @@ FLASHMEM int CopySDToEEPROM() {
   RedrawDisplayScreen();
   return 1;
 }
-
+#endif // USE_JSON
 
 
 
@@ -1858,6 +1986,7 @@ FLASHMEM void ConvertForEEPROM(File file, char *buffer, int val, int whatDataTyp
 }
 
 
+#if !defined(USE_JSON)
 /*****
   Purpose: Writes the current values of the working variable
            to the SD card as SDEEPROMData.txt
@@ -2260,7 +2389,7 @@ int CopyEEPROMToSD() {
   RedrawDisplayScreen();
   return 1;
 }
-
+#endif // USE_JSON
 
 /*****
   Purpose: See if the EEPROM has ever been set
@@ -2381,7 +2510,7 @@ void EEPROMStartup()
 #endif // G0ORX_FRONTPANEL
   //                                                                     If we get here, the switch values have been set, either previously or by the call to
   //                                                                     SaveAnalogSwitchValues() as has the rest of the EEPROM data. This avoids recalibration.
-#if defined(G0ORX_FRONTPANEL)
+#if defined(G0ORX_FRONTPANEL) || defined(V12HWR)
   EEPROMSaveDefaults2();
 #endif // G0ORX_FRONTPANEL
 

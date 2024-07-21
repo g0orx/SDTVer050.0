@@ -19,6 +19,10 @@
 #include "G0ORX_CAT.h"
 #endif // G0ORX_CAT
 
+// G0ORX_AUDIO_DISPLAY draws a Time Domain plot of the Microphone when transmitting
+#define G0ORX_AUDIO_DISPLAY
+
+
 //====================== User Specific Preferences =============
 
 #define DEBUG 		                1                                         // Uncommented for debugging, comment out for normal use
@@ -56,7 +60,7 @@
 #define DEFAULT_POWER_LEVEL       10                                        // Startup power level. Probably 20 for most people
 #define FAST_TUNE_INCREMENT    	  1			 		                                // Default from above for fine tune
 #define SPLASH_DELAY              1000L                                     // How long to show Splash screen. Use 1000 for testing, 4000 normally
-#define STARTUP_BAND        			1                                         // This is the 40M band. see around line 575 in SDT.h
+#define STARTUP_BAND        			BAND_40M                                  // This is the 40M band. see around line 575 in SDT.h // G0ORX changed from 1
 
 #define CENTER_SCREEN_X           400
 #define CENTER_SCREEN_Y           245

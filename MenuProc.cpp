@@ -2,6 +2,10 @@
 #include "SDT.h"
 #endif
 
+#if defined(USE_JSON)
+#include "JSON.h"
+#endif // USE_JSON
+
 // Updates by KF5N to CalibrateOptions() function. July 20, 2023
 // Updated receive calibration code to clean up graphics.  KF5N August 3, 2023
 
@@ -385,6 +389,7 @@ void ProcessEqualizerChoices(int EQType, char *title) {
                      barWidth,                   // Set bar width
                      newValue + 1,               // Erase old bar
                      RA8875_BLACK);
+
         newValue += (PIXELS_PER_EQUALIZER_DELTA * filterEncoderMove);  // Find new bar height. OK since filterEncoderMove equals 1 or -1
         tft.fillRect(xOffset,                                          // Indent to proper bar...
                      barBottomY - newValue,                            // Start at red line
@@ -721,7 +726,7 @@ int RFOptions() {
 
       while (true) {
         if (filterEncoderMove != 0) {
-          currentRF_OutAtten += -filterEncoderMove;
+          currentRF_OutAtten += -filterEncoderMove;         
           if (currentRF_OutAtten > 63)
             currentRF_OutAtten = 63;
           else if (currentRF_OutAtten < 0)  // 100% max
@@ -801,7 +806,7 @@ void DoPaddleFlip() {
 
   while (true) {
     if (filterEncoderMove != 0) {   // Changed encoder?
-      choice += filterEncoderMove;  // Yep
+      choice += filterEncoderMove;  // Yep 
       if (choice < 0) {
         choice = 2;
       } else {
@@ -937,12 +942,15 @@ int VFOSelect() {
     int           the user's choice
 *****/
 int EEPROMOptions() {
+  config_t tempConfig;
   //const char *EEPROMOpts[] = {"Save Current", "Set Defaults", "Get Favorite", "Set Favorite",
   //                            "Copy EEPROM-->SD", "Copy SD-->EEPROM", "SD EEPROM Dump", "Cancel" };
 
-//  Serial.print("for eeprom secondaryMenuChoiceMade = ");
-//  Serial.println(secondaryMenuChoiceMade);
-  switch (secondaryMenuChoiceMade) {
+  //Serial.print("for eeprom secondaryMenuChoiceMade = ");
+  //Serial.println(secondaryMenuChoiceMade);
+
+  //switch (secondaryMenuChoiceMade) { // G0ORX changed to secondaryMenuIndex
+  switch (secondaryMenuIndex) {
     case 0:  // Save current values
       EEPROMWrite();
       break;
@@ -960,12 +968,22 @@ int EEPROMOptions() {
       break;
 
     case 4:
+#if defined(USE_JSON)
+      EEPROM.get(EEPROM_BASE_ADDRESS + 4, tempConfig);
+      saveConfiguration(filename, tempConfig, true);    // Save EEPROM struct to SD
+#else
       CopyEEPROMToSD();  // Save current EEPROM value to SD
+#endif // USE_JSON
       break;
 
     case 5:
+#if defined(USE_JSON)
+      loadConfiguration(filename, EEPROMData);
+      EEPROMWrite();
+#else
       CopySDToEEPROM();  // Copy from SD to EEPROM
       EEPROMRead();      // KF5N
+#endif // USE_JSON
       tft.writeTo(L2);   // This is specifically to clear the bandwidth indicator bar.  KF5N August 7, 2023
       tft.clearMemory();
       tft.writeTo(L1);
@@ -1040,7 +1058,7 @@ int SubmenuSelect(const char *options[], int numberOfChoices, int defaultStart) 
   filterEncoderMove = 0;
 
   while (true) {
-    if (filterEncoderMove != 0) {  // Encoder ws moved
+    if (filterEncoderMove != 0) {  // Encoder ws move
       encoderReturnValue += filterEncoderMove;
       if (encoderReturnValue >= numberOfChoices)
         encoderReturnValue = 0;

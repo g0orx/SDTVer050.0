@@ -37,12 +37,16 @@ int EvenDivisor(long freq2) {
   if ((freq2 >= 80000000) && (freq2 < 100000000))
     multiple = 8;
 
-  if ((freq2 >= 100000000) && (freq2 < 146600000))
+  if ((freq2 >= 100000000) && (freq2 < 150000000)) // G0ORX changed upper limit
     multiple = 6;
 
   if ((freq2 >= 150000000) && (freq2 < 220000000))
     multiple = 4;
 
+  // ? G0ORX - for higher bands
+  if(freq2>=220000000) {
+    multiple = 2;
+  }
   return multiple;
 }
 
@@ -205,14 +209,14 @@ void SetFreq() {  //AFP
   }
   //oldMultiple = multiple;
   //si5351.output_enable(SI5351_CLK2, 0);
-  /*
+/*
   Serial.print("freq=");
   Serial.println(freq);
   Serial.print("pll_freq=");
   Serial.println(pll_freq);
   Serial.print("multiple=");
   Serial.println(multiple);
-  */
+*/
   /*
  if (CW_ON == HIGH) {
    Clk2SetFreq = ((centerFreq * SI5351_FREQ_MULT));

@@ -136,7 +136,7 @@ void EncoderCenterTune() {
     //tuneChange = 0L;
   } else {//if (BodePlotFlag != 1) {
 #endif // BODE
-    centerFreq += -((long)freqIncrement * tuneChange);  // tune the master vfo
+    centerFreq += ((long)freqIncrement * tuneChange);  // tune the master vfo
 
 //=================== AFP 03-30-24 V012 Bode Plot end
 

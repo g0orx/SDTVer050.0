@@ -140,11 +140,7 @@ int SetPrimaryMenuIndex()
       tft.setTextColor(RA8875_WHITE);         // Yep. Repaint the old choice
       tft.setCursor(10, mainMenuIndex * 27 + 21);
       tft.print(topMenus[mainMenuIndex]);
-#if defined(G0ORX_FRONTPANEL)
-      mainMenuIndex -= filterEncoderMove;     // Change the menu index to the new value
-#else
       mainMenuIndex += filterEncoderMove;     // Change the menu index to the new value
-#endif // G0ORX_FRONTPANEL
       if (mainMenuIndex == TOP_MENU_COUNT) {  // Did they go past the end of the primary menu list?
         mainMenuIndex = 0;                    // Yep. Set to start of the list.
       } else {
@@ -253,6 +249,8 @@ int SetSecondaryMenuIndex()
       tft.setCursor(300, i * 27 + 21);
       tft.print(secondaryChoices[mainMenuIndex][i]);
       filterEncoderMove = 0;
+
+Serial.println(String(__FUNCTION__)+": "+String(i));
     }
     val = ReadSelectedPushButton();  // Read the ladder value
     MyDelay(200L);
@@ -270,5 +268,6 @@ int SetSecondaryMenuIndex()
     }
   }  // End while True
 
+Serial.println(String(__FUNCTION__)+": returning "+String(i));
   return secondaryMenuIndex;
 }

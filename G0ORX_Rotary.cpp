@@ -14,13 +14,12 @@
 
 #if defined(G0ORX_FRONTPANEL)
 
+// comment out to reverse encoders
+
 static bool ccw_fall = 0;
 static bool cw_fall = 0;
-#ifdef BOURN_ENCODERS
-static bool fwd = true;
-#else
-static bool fwd = false;
-#endif
+
+//#define REVERSE_DIRECTION
 
 /*
 unsigned char A;
@@ -44,11 +43,11 @@ void G0ORX_Rotary::updateA(unsigned char state) {
   if (ccw_fall && (state == 0b00)) { // if ccw_fall is already set to true from a previous B phase trigger, the ccw event will be triggered
     cw_fall = false;
     ccw_fall = false;
-    if (fwd) {
+#if defined(REVERSE_DIRECTION)
       value++;
-    } else {
+#else
       value--;
-    }
+#endif // REVERSE_DIRECTION
   }
 }
 
@@ -60,11 +59,11 @@ void G0ORX_Rotary::updateB(unsigned char state) {
   if (cw_fall && (state == 0b00)) { //cw trigger
     cw_fall = false;
     ccw_fall = false;
-    if (fwd) {
+#if defined(REVERSE_DIRECTION)
       value--;
-    } else {
+#else
       value++;
-    }
+#endif // REVERSE_DIRECTION
   }
 }
 
