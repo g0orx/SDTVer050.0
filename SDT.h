@@ -14,6 +14,9 @@ struct maps {
 };
 extern struct maps myMapFiles[];
 
+#if defined(V12HWR)
+#include "RF_CONTROL.h"
+#endif // V12HWR
 
 //======================================== Library include files ========================================================
 #include <Adafruit_GFX.h>
@@ -668,8 +671,8 @@ extern int radioState, lastState;  // Used by the loop to monitor current state.
 
 //=== CW Filter ===
 
-
-extern Adafruit_MCP23X17 mcp;
+// G0ORX - moved to RF_CONTROL source
+//extern Adafruit_MCP23X17 mcp;
 
 //------------------------- Global CW Filter declarations ----------
 

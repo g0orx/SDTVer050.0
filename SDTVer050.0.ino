@@ -660,7 +660,7 @@ const char *topMenus[] = { "CW Options", "RF Set", "VFO Select",
                            "Noise Floor", "Mic Gain", "Mic Comp",
                            "EQ Rec Set", "EQ Xmt Set", "Calibrate",
 #if !defined(EXCLUDE_BEARING)
-                           "Bearing"
+                           "Bearing",
 #endif // EXCLUDE_BEARING
 #if !defined(EXCLUDE_BODE)
                            "Bode"
@@ -812,7 +812,9 @@ AudioConnection patchCord24(Q_out_R_Ex, 0, modeSelectOutR, 1);
 
 // ===================
 
-Adafruit_MCP23X17 mcp;
+// G0ORX - moved to seperate source file
+
+//Adafruit_MCP23X17 mcp;
 
 //AudioControlSGTL5000  sgtl5000_1;
 AudioControlSGTL5000 sgtl5000_2;
@@ -2683,6 +2685,8 @@ void setup() {
   setTime(now());
   Teensy3Clock.set(now());  // set the RTC
   T4_rtc_set(Teensy3Clock.get());
+// G0ORX - moved to seperate source file
+/*
   mcp.begin_I2C(0x27);
 
   mcp.pinMode(0, OUTPUT);
@@ -2701,7 +2705,7 @@ void setup() {
   mcp.pinMode(13, OUTPUT);
   mcp.pinMode(14, OUTPUT);
   mcp.pinMode(15, OUTPUT);
-
+*/
 
   sgtl5000_1.setAddress(LOW);
   sgtl5000_1.enable();
@@ -2844,9 +2848,6 @@ void setup() {
   /****************************************************************************************
      start local oscillator Si5351
   ****************************************************************************************/
-  #if defined(G0ORX_FRONTPANEL)
-  //__disable_irq();
-  #endif // G0ORX_FRONTPANEL
   si5351.reset();
   MyDelay(100L);
                                                               // KF5N.  Moved Si5351 start-up to setup. JJP  7/14/23
@@ -2867,9 +2868,7 @@ void setup() {
   //si5351.pll_reset(SI5351_PLLA);  // G0ORX Added
   //si5351.pll_reset(SI5351_PLLB);  // G0ORX Added
 
-  #if defined(G0ORX_FRONTPANEL)
-  //__enable_irq();
-  #endif // G0ORX_FRONTPANEL
+
 
   if (xmtMode == CW_MODE && decoderFlag == DECODE_OFF) {
     decoderFlag = DECODE_OFF;  // JJP 7/1/23
@@ -2923,6 +2922,13 @@ void setup() {
   release_sec = 2.0;
   comp1.setPreGain_dB(-10);  //set the gain of the Left-channel gain processor
   comp2.setPreGain_dB(-10);  //set the gain of the Right-channel gain processor
+
+#if defined(V12HWR)
+  RFControlInit();
+  SetRF_InAtten(currentRF_InAtten);
+  SetRF_OutAtten(currentRF_OutAtten);
+  RFControl_Enable_Prescaler(currentBand==BAND_630M || currentBand==BAND_160M);
+#endif // V12HRW
 
 #if defined(G0ORX_FRONTPANEL)
   FrontPanelInit();

@@ -3,6 +3,7 @@
 #include "SDT.h"
 #endif
 
+
 /*****
   Purpose: Determine which UI button was pressed
 
@@ -145,9 +146,12 @@ int (*functionPtr[])() = { &CWOptions, &RFOptions, &VFOSelect,
 
     case BAND_UP:  // 2         Now calls ProcessIQData and Encoders calls                    Button 2
       EraseMenus();
-      if (currentBand < 5) digitalWrite(bandswitchPins[currentBand], LOW);  // Added if so unused GPOs will not be touched.  KF5N October 16, 2023.
+      if (currentBand < BAND_12M) digitalWrite(bandswitchPins[currentBand], LOW);  // Added if so unused GPOs will not be touched.  KF5N October 16, 2023.
       ButtonBandIncrease();
-      if (currentBand < 5) digitalWrite(bandswitchPins[currentBand], HIGH);
+      if (currentBand < BAND_12M) digitalWrite(bandswitchPins[currentBand], HIGH);
+#if defined(V12HWR)
+      RFControl_Enable_Prescaler(currentBand==BAND_630M || currentBand==BAND_160M);
+#endif // V12HWR
       BandInformation();
       NCOFreq = 0L;
       DrawBandWidthIndicatorBar();  // AFP 10-20-22
@@ -173,9 +177,12 @@ int (*functionPtr[])() = { &CWOptions, &RFOptions, &VFOSelect,
     case BAND_DN:  // 5
       EraseMenus();
       ShowSpectrum();  //Now calls ProcessIQData and Encoders calls
-      if (currentBand < 5) digitalWrite(bandswitchPins[currentBand], LOW);
+      if (currentBand < BAND_12M) digitalWrite(bandswitchPins[currentBand], LOW);
       ButtonBandDecrease();
-      if (currentBand < 5) digitalWrite(bandswitchPins[currentBand], HIGH);
+      if (currentBand < BAND_12M) digitalWrite(bandswitchPins[currentBand], HIGH);
+#if defined(V12HWR)
+      RFControl_Enable_Prescaler(currentBand==BAND_630M || currentBand==BAND_160M);
+#endif // V12HWR
       BandInformation();
       NCOFreq = 0L;
       DrawBandWidthIndicatorBar();  //AFP 10-20-22

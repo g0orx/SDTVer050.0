@@ -2,6 +2,8 @@
 #include "SDT.h"
 #endif
 
+// G0ORX - moved to RF_CONTROL
+
 /*****
   Purpose: Set RF input Attenuator AFP 04-12-24
   Parameter list:
@@ -9,6 +11,7 @@
   Return value;
     void
 *****/
+/*
 void SetRF_InAtten(int attenIn) {
   int nQ;
   int rem;
@@ -21,7 +24,7 @@ void SetRF_InAtten(int attenIn) {
     attenIn = nQ;
   }
 }
-
+*/
 /*****
   Purpose: Set RF output Attenuator AFP 04-12-24
   Parameter list:
@@ -29,6 +32,7 @@ void SetRF_InAtten(int attenIn) {
   Return value;
     void
 *****/
+/*
 void SetRF_OutAtten(int attenOut) {
   int nQ;
   int rem;
@@ -38,14 +42,10 @@ void SetRF_OutAtten(int attenOut) {
     nQ = (int)attenOut / 2;
     rem = attenOut - 2 * nQ;
     mcp.digitalWrite(i + 8, rem);
-/*    
-Serial.print(" i= ");Serial.print(i);
-Serial.print(" i+8= ");Serial.print(i+8);
-Serial.print(" rem= ");Serial.println(rem);
-*/
     attenOut = nQ;
   }
 }
+*/
 
 /*****
   Purpose: Generate Array with variable sinewave frequency tone AFP 05-17-22
@@ -726,6 +726,10 @@ int ChangeBand(long f, bool updateRelays) {
     digitalWrite(bandswitchPins[currentBand], LOW);
     digitalWrite(bandswitchPins[b], HIGH);
   }
+
+#if defined(V12HWR)
+  RFControl_Enable_Prescaler(currentBand==BAND_630M || currentBand==BAND_160M);
+#endif // V12HWR
 
   return b;
 }

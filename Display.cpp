@@ -673,7 +673,7 @@ void FormatFrequency(long freq, char *freqBuffer) {
   } else {
     sprintf(freqBuffer,"     %03ld.%03ld",freq%(long)1000000/(long)1000,freq%(long)1000);
   }
-#else // V12HDW
+#else // V12HWR
   char outBuffer[15];
   int i;
   int len;
@@ -760,7 +760,7 @@ void FormatFrequency(long freq, char *freqBuffer) {
   }
   freqBuffer[i] = '\0';                      // Make it a string
 */
-#endif // V12HDW
+#endif // V12HWR
 }
 
 /*****
