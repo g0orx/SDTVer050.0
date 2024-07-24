@@ -170,12 +170,20 @@ void SetFreq() {  //AFP
 
 #ifdef V12HWR                                    // V12 hardware using Si5351 quadrature clocks.
 
+  long long f=centerFreq;
+
+  // check for MF frequency
+  if(f<=2000000) {
+    RFControl_Enable_Prescaler(true);
+    f=f*8;
+  } else {
+    RFControl_Enable_Prescaler(false);
+  }
+
 // Note CW specific code is not yet implimented in this version.
  // long freqCal;
-  Clk1SetFreq = ((centerFreq * SI5351_FREQ_MULT) + IFFreq * SI5351_FREQ_MULT);
+  Clk1SetFreq = ((f * SI5351_FREQ_MULT) + IFFreq * SI5351_FREQ_MULT);
   multiple = EvenDivisor(Clk1SetFreq / SI5351_FREQ_MULT);
-
-  pll_freq = freq * multiple;
 
   pll_freq = Clk1SetFreq * multiple;
   freq = pll_freq / multiple;
