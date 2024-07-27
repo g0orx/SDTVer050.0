@@ -2928,7 +2928,24 @@ void setup() {
   SetRF_InAtten(currentRF_InAtten);
   SetRF_OutAtten(currentRF_OutAtten);
   RFControl_Enable_Prescaler(currentBand==BAND_630M || currentBand==BAND_160M);
+
+  // KI3P: Configure the pins for the auto shutdown
+  pinMode(BEGIN_TEENSY_SHUTDOWN, INPUT); // positive pulse tells Teensy to start shutdown routine
+  pinMode(SHUTDOWN_COMPLETE, OUTPUT);
+  digitalWrite(SHUTDOWN_COMPLETE,0); // positive pulse completes shutdown
 #endif // V12HRW
+
+// KI3P -- Added K9HZ LPF board support
+#if defined(K9HZ_LPF)
+  Wire2.begin();
+  K9HZLPFControlInit();
+#endif // K9HZ_LPF
+
+// KI3P -- Added BPF board support
+#if defined(V12BPF)
+  Wire2.begin();
+  BPFControlInit();
+#endif // V12BPF
 
 #if defined(G0ORX_FRONTPANEL)
   FrontPanelInit();
@@ -2964,6 +2981,11 @@ FASTRUN void loop()  // Replaced entire loop() with Greg's code  JJP  7/14/23
 #if defined(G0ORX_CAT)
   CATSerialEvent();
 #endif
+
+  // KI3P: Check for signal to begin shutdown. This should be done with an ISR instead.
+  if (digitalRead(BEGIN_TEENSY_SHUTDOWN) == HIGH){
+    ShutdownTeensy();
+  }
 
   valPin = ReadSelectedPushButton();  // Poll UI push buttons
   if (valPin != BOGUS_PIN_READ) {     // If a button was pushed...

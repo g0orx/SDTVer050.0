@@ -18,6 +18,24 @@ extern struct maps myMapFiles[];
 #include "RF_CONTROL.h"
 #endif // V12HWR
 
+// KI3P: added support for lowpass and bandpass filter boards
+
+//#define DEBUG_MESSAGES
+
+#ifdef DEBUG_MESSAGES
+#define Debug(x) Serial.println(x)
+#else
+#define Debug(x)
+#endif
+
+#if defined(K9HZ_LPF)
+#include "K9HZ_LPF_Control.h"
+#endif // K9HZ_LPF 
+
+#if defined(V12BPF)
+#include "BPF_Control.h"
+#endif // V12BPF 
+
 //======================================== Library include files ========================================================
 #include <Adafruit_GFX.h>
 #include "Adafruit_MCP23X17.h"
@@ -392,6 +410,11 @@ extern struct maps myMapFiles[];
 //========================================= On the Teensy 4.1 board, pins GND, 0-12, and pins 13-23, 3.3V, GND, and
 //========================================= Vin are "covered up" by the Audio board. However, not all of those pins are
 //========================================= actually used by the board. See: https://www.pjrc.com/store/teensy3_audio.html
+
+// KI3P: Teensy shutdown pins
+#define BEGIN_TEENSY_SHUTDOWN       0
+#define SHUTDOWN_COMPLETE           1
+void ShutdownTeensy(void);
 
 //========================================= Display pins
 #define BACKLIGHT_PIN               6     // unfortunately connected to 3V3 in DO7JBHs PCB 

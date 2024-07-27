@@ -73,6 +73,9 @@
 
 //#define V11HWR           // Selectes Si5351 clock frequencies for the 4x frequency method           
 #define V12HWR             // selects the Si5351 direst quadruture clock output for V12 hardware.
+// KI3P: Added define variables to enable lowpass and bandpass filter boards
+#define K9HZ_LPF           // Selects the K9HZ LPF board
+#define V12BPF             // Selects the V12 BPF board
 
 // Set multiplication factors for your QSD and QSE boards.
 #ifdef NORM_ENCODER
