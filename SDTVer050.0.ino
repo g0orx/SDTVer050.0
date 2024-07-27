@@ -2941,6 +2941,11 @@ void setup() {
   K9HZLPFControlInit();
 #endif // K9HZ_LPF
 
+// KI3P -- Added BPF board support
+#if defined(V12BPF)
+  Wire2.begin();
+  BPFControlInit();
+#endif // V12BPF
 
 #if defined(G0ORX_FRONTPANEL)
   FrontPanelInit();

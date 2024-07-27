@@ -10,7 +10,6 @@ static Adafruit_MCP23X17 mcpLPF; // connected to Wire2
 static AD7991 swrADC; // on K9HZ LPF board
 static uint8_t LPF_GPB_state;
 static uint8_t LPF_GPA_state;
-static bool failed;
 
 void K9HZLPFControlInit() {
   /******************************************************************

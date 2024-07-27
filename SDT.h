@@ -32,12 +32,9 @@ extern struct maps myMapFiles[];
 #include "K9HZ_LPF_Control.h"
 #endif // K9HZ_LPF 
 
-//#if defined(V12BPF)
-//#include "V12_BPF_Control.h"
-//#endif // V12BPF 
-
-
-
+#if defined(V12BPF)
+#include "BPF_Control.h"
+#endif // V12BPF 
 
 //======================================== Library include files ========================================================
 #include <Adafruit_GFX.h>

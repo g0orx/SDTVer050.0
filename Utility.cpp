@@ -637,6 +637,11 @@ void SetBand() {
   setLPFBand(currentBand);
   #endif // K9HZ_LPF
 
+  // Set the BPF bands, added by KI3P
+  #ifdef V12BPF
+  setBPFBand(currentBand);
+  #endif // V12BPF
+
 }
 
 // G0ORX - Split code out ot allow use from other code
