@@ -393,6 +393,11 @@ extern struct maps myMapFiles[];
 //========================================= Vin are "covered up" by the Audio board. However, not all of those pins are
 //========================================= actually used by the board. See: https://www.pjrc.com/store/teensy3_audio.html
 
+// KI3P: Teensy shutdown pins
+#define BEGIN_TEENSY_SHUTDOWN       0
+#define SHUTDOWN_COMPLETE           1
+void ShutdownTeensy(void);
+
 //========================================= Display pins
 #define BACKLIGHT_PIN               6     // unfortunately connected to 3V3 in DO7JBHs PCB 
 #define TFT_DC                      9

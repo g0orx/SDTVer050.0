@@ -48,6 +48,26 @@ void SetRF_OutAtten(int attenOut) {
 */
 
 /*****
+  Purpose: Shut down the radio gracefully when informed by the Shutdown circuitry 
+  that the power button has been pressed.
+
+  Parameter list:
+    void
+
+  Return value;
+    void
+*****/
+void ShutdownTeensy()  // KI3P
+{
+  /* Do shutdown stuff. Nothing here yet */
+
+  /* Tell the ATTiny that we have finished shutdown and it's safe to power off */
+  digitalWrite(SHUTDOWN_COMPLETE, 1);
+  delay(100);
+  digitalWrite(SHUTDOWN_COMPLETE, 0);
+}
+
+/*****
   Purpose: Generate Array with variable sinewave frequency tone AFP 05-17-22
   Parameter list:
     void
