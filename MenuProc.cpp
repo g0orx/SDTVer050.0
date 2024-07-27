@@ -29,10 +29,14 @@ int CalibrateOptions(int IQChoice) {
     case 0:  // Calibrate Frequency  - uses WWV
       freqCorrectionFactor = GetEncoderValueLive(-200000, 200000, freqCorrectionFactor, increment, (char *)"Freq Cal: ");
       if (freqCorrectionFactor != freqCorrectionFactorOld) {
-        si5351.init(SI5351_CRYSTAL_LOAD_10PF, Si_5351_crystal, freqCorrectionFactor);
-        si5351.drive_strength(SI5351_CLK0, SI5351_DRIVE_8MA);  // KF5N July 10 2023
-        si5351.drive_strength(SI5351_CLK1, SI5351_DRIVE_8MA);
+        si5351.init(SI5351_CRYSTAL_LOAD_8PF, Si_5351_crystal, freqCorrectionFactor); // KI3P July 27 2024, updated to mirror Setup()
+        MyDelay(100L); // KI3P July 27 2024, updated to mirror Setup()
+        si5351.drive_strength(SI5351_CLK0, SI5351_DRIVE_2MA);  // KI3P July 27 2024, updated to mirror Setup()
+        si5351.drive_strength(SI5351_CLK1, SI5351_DRIVE_2MA);  // KI3P July 27 2024, updated to mirror Setup()
         si5351.drive_strength(SI5351_CLK2, SI5351_DRIVE_2MA);  // KF5N July 10 2023
+        si5351.set_ms_source(SI5351_CLK0, SI5351_PLLA); // KI3P July 27 2024, updated to mirror Setup()
+        si5351.set_ms_source(SI5351_CLK1, SI5351_PLLA); // KI3P July 27 2024, updated to mirror Setup()
+        
         SetFreq();
         MyDelay(10L);
         freqCorrectionFactorOld = freqCorrectionFactor;
