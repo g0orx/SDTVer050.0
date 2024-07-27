@@ -2,51 +2,6 @@
 #include "SDT.h"
 #endif
 
-// G0ORX - moved to RF_CONTROL
-
-/*****
-  Purpose: Set RF input Attenuator AFP 04-12-24
-  Parameter list:
-    void
-  Return value;
-    void
-*****/
-/*
-void SetRF_InAtten(int attenIn) {
-  int nQ;
-  int rem;
-  mcp.begin_I2C(0x27);
-
-  for (int i = 0; i < 6; i++) {
-    nQ = (int)attenIn / 2;
-    rem = attenIn - 2 * nQ;
-    mcp.digitalWrite(i + 1, rem);
-    attenIn = nQ;
-  }
-}
-*/
-/*****
-  Purpose: Set RF output Attenuator AFP 04-12-24
-  Parameter list:
-    int attenOut
-  Return value;
-    void
-*****/
-/*
-void SetRF_OutAtten(int attenOut) {
-  int nQ;
-  int rem;
-  mcp.begin_I2C(0x27);
-
-  for (int i = 0; i < 6; i++) {
-    nQ = (int)attenOut / 2;
-    rem = attenOut - 2 * nQ;
-    mcp.digitalWrite(i + 8, rem);
-    attenOut = nQ;
-  }
-}
-*/
-
 /*****
   Purpose: Shut down the radio gracefully when informed by the Shutdown circuitry 
   that the power button has been pressed.
@@ -676,6 +631,12 @@ void SetBand() {
   SetFreq();
   ShowFrequency();
   FilterBandwidth();
+
+  // Set the LPF bands, added by KI3P
+  #ifdef K9HZ_LPF
+  setLPFBand(currentBand);
+  #endif // K9HZ_LPF
+
 }
 
 // G0ORX - Split code out ot allow use from other code

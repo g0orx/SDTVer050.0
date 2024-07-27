@@ -18,6 +18,27 @@ extern struct maps myMapFiles[];
 #include "RF_CONTROL.h"
 #endif // V12HWR
 
+// KI3P: added support for lowpass and bandpass filter boards
+
+//#define DEBUG_MESSAGES
+
+#ifdef DEBUG_MESSAGES
+#define Debug(x) Serial.println(x)
+#else
+#define Debug(x)
+#endif
+
+#if defined(K9HZ_LPF)
+#include "K9HZ_LPF_Control.h"
+#endif // K9HZ_LPF 
+
+//#if defined(V12BPF)
+//#include "V12_BPF_Control.h"
+//#endif // V12BPF 
+
+
+
+
 //======================================== Library include files ========================================================
 #include <Adafruit_GFX.h>
 #include "Adafruit_MCP23X17.h"

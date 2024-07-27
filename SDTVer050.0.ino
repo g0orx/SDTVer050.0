@@ -2933,9 +2933,14 @@ void setup() {
   pinMode(BEGIN_TEENSY_SHUTDOWN, INPUT); // positive pulse tells Teensy to start shutdown routine
   pinMode(SHUTDOWN_COMPLETE, OUTPUT);
   digitalWrite(SHUTDOWN_COMPLETE,0); // positive pulse completes shutdown
-
-
 #endif // V12HRW
+
+// KI3P -- Added K9HZ LPF board support
+#if defined(K9HZ_LPF)
+  Wire2.begin();
+  K9HZLPFControlInit();
+#endif // K9HZ_LPF
+
 
 #if defined(G0ORX_FRONTPANEL)
   FrontPanelInit();
