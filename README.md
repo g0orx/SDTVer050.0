@@ -1,6 +1,9 @@
 # SDTVer050.0
 
-This version has the Bearing and BodePlotter code included.
+This version has the Bearing and BodePlotter code included. It also supports the shutdown routine
+using the ATTiny85 on the external boards, the V12 BPF board, and the K9HZ LPF board. It implements
+only one of the features on the K9HZ LPF board, namely the band select feature. Support for the SWR
+meter, transverter selection, 100W amp selection, and antenna selection will be future work.
 
 Latest SDTVer050.0 with G0ORX MCP23017 Front Panel Code and Kenwood TS-2000 CAT interface.
 
