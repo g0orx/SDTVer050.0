@@ -1,16 +1,22 @@
 // G0ORX Preferences
 
-// G0ORX - For Memory testing
-// Uncomment to exclude BEARING and/or BODE code
-//#define EXCLUDE_BEARING
-//#define EXCLUDE_BODE
-
 // Uncomment if using G0ORX or K9HZ MCP23017 Front Panel
-#define G0ORX_FRONTPANEL
+//#define G0ORX_FRONTPANEL
 
 #if defined(G0ORX_FRONTPANEL)
 #include "G0ORX_FrontPanel.h"
 #endif // G0ORX_FRONTPANEL
+
+// Uncomment if using G0ORX RPi Pico Front Panel
+#define G0ORX_FRONTPANEL_2
+
+#if defined(G0ORX_FRONTPANEL_2)
+#include "G0ORX_FrontPanel_2.h"
+#endif // G0ORX_FRONTPANEL
+
+#if (defined(G0ORX_FRONTPANEL) && defined(G0ORX_FRONTPANEL_2))
+#error Only G0ORX_FRONTPANEL OR G0ORX_FRONTPANEL_2 can be defined (not both)
+#endif
 
 // Uncomment if using G0ORX Kenwood TS-2000 CAT interface
 #define G0ORX_CAT
@@ -74,7 +80,7 @@
 //#define V11HWR           // Selectes Si5351 clock frequencies for the 4x frequency method           
 #define V12HWR             // selects the Si5351 direst quadruture clock output for V12 hardware.
 // KI3P: Added define variables to enable lowpass and bandpass filter boards
-#define K9HZ_LPF           // Selects the K9HZ LPF board
+//#define K9HZ_LPF           // Selects the K9HZ LPF board
 #define V12BPF             // Selects the V12 BPF board
 
 // Set multiplication factors for your QSD and QSE boards.

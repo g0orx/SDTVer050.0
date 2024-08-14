@@ -14,7 +14,7 @@
     int                   -1 if not valid push button, index of push button if valid
 *****/
 int ProcessButtonPress(int valPin) {
-#if defined(G0ORX_FRONTPANEL)
+#if defined(G0ORX_FRONTPANEL) || defined(G0ORX_FRONTPANEL_2)
   return valPin;
 #else
   int switchIndex;
@@ -33,7 +33,7 @@ int ProcessButtonPress(int valPin) {
     }
   }
   return -1;  // Really should never do this
-#endif // G0ORX_FRONTPANEL
+#endif // G0ORX_FRONTPANEL || G0ORX_FRONTPANEL_2
 }
 
 /*****
@@ -46,11 +46,16 @@ int ProcessButtonPress(int valPin) {
     int                   -1 if not valid push button, ADC value if valid
 *****/
 int ReadSelectedPushButton() {
-#if defined(G0ORX_FRONTPANEL)
+#if defined(G0ORX_FRONTPANEL)  || defined(G0ORX_FRONTPANEL_2)
   __disable_irq();
+#ifdef G0ORX_FRONTPANEL_2
+  getKeypad();
+#endif // G0ORX_FRONTPANEL_2
+
   int i=G0ORXButtonPressed;
   G0ORXButtonPressed=-1;
   __enable_irq();
+
   return i;
 #else
   minPinRead = 0;
@@ -61,18 +66,14 @@ int ReadSelectedPushButton() {
     buttonRead = .1 * minPinRead + .9 * buttonReadOld;  // See expected values in next function.
     buttonReadOld = buttonRead;
   }
-  //Serial.print("In ReadSelectedPushButton: minPinRead = ");
-  //Serial.println(minPinRead);
 
   if (buttonRead >= EEPROMData.switchValues[0] + WIGGLE_ROOM) {  //AFP 10-29-22   too large?
     return -1;
   }
   minPinRead = buttonRead;
   MyDelay(100L);
-  //("    minPinRead = ");
-  //Serial.println(minPinRead);
   return minPinRead;
-#endif // G0ORX_FRONTPANEL
+#endif // G0ORX_FRONTPANEL  || G0ORX_FRONTPANEL_2
 }
 
 /*****
@@ -100,8 +101,6 @@ void ExecuteButtonPress(int val) {
     menuStatus = PRIMARY_MENU_ACTIVE;
 */
   MyDelay(100L);
-  //("top of ExecuteButtonPress(),     val = ");
- //Serial.println(val);
 
   switch (val) {
     case MENU_OPTION_SELECT:  // 0
@@ -132,7 +131,6 @@ int (*functionPtr[])() = { &CWOptions, &RFOptions, &VFOSelect,
         break;
       }
       SetSecondaryMenuIndex();  // Use the primary index selection to redraw the secondary menu and set its index
-
       secondaryMenuChoiceMade = functionPtr[mainMenuIndex]();
 
       tft.fillRect(1, SPECTRUM_TOP_Y + 1, 513, 379, RA8875_BLACK);  // Erase Menu box
@@ -147,14 +145,14 @@ int (*functionPtr[])() = { &CWOptions, &RFOptions, &VFOSelect,
     case BAND_UP:  // 2         Now calls ProcessIQData and Encoders calls                    Button 2
       EraseMenus();
       if (currentBand < BAND_12M) digitalWrite(bandswitchPins[currentBand], LOW);  // Added if so unused GPOs will not be touched.  KF5N October 16, 2023.
-      ButtonBandIncrease();
+      ButtonBandChange(+1);
       if (currentBand < BAND_12M) digitalWrite(bandswitchPins[currentBand], HIGH);
       BandInformation();
       NCOFreq = 0L;
-      DrawBandWidthIndicatorBar();  // AFP 10-20-22
-#if defined(G0ORX_FRONTPANEL)
+//      DrawBandWidthIndicatorBar();  // AFP 10-20-22
+#if defined(G0ORX_FRONTPANEL) || defined(G0ORX_FRONTPANEL_2)
       UpdateVolumeField();
-#endif // G0ORX_FRONTPANEL
+#endif // G0ORX_FRONTPANEL || G0ORX_FRONTPANEL_2
       //SetFreq();
       ShowSpectrum();
       break;
@@ -167,11 +165,23 @@ int (*functionPtr[])() = { &CWOptions, &RFOptions, &VFOSelect,
 
     //case MAIN_MENU_DN:                                // 4
     case RESET_TUNING:
-//      Serial.println("Reset Tuning selected.");
       ResetTuning();
       break;
 
     case BAND_DN:  // 5
+      EraseMenus();
+      if (currentBand < BAND_12M) digitalWrite(bandswitchPins[currentBand], LOW);  // Added if so unused GPOs will not be touched.  KF5N October 16, 2023.
+      ButtonBandChange(-1);
+      if (currentBand < BAND_12M) digitalWrite(bandswitchPins[currentBand], HIGH);
+      BandInformation();
+      NCOFreq = 0L;
+//      DrawBandWidthIndicatorBar();  // AFP 10-20-22
+#if defined(G0ORX_FRONTPANEL) || defined(G0ORX_FRONTPANEL_2)
+      UpdateVolumeField();
+#endif // G0ORX_FRONTPANEL || G0ORX_FRONTPANEL_2
+      //SetFreq();
+      ShowSpectrum();
+/*
       EraseMenus();
       ShowSpectrum();  //Now calls ProcessIQData and Encoders calls
       if (currentBand < BAND_12M) digitalWrite(bandswitchPins[currentBand], LOW);
@@ -181,9 +191,10 @@ int (*functionPtr[])() = { &CWOptions, &RFOptions, &VFOSelect,
       BandInformation();
       NCOFreq = 0L;
       DrawBandWidthIndicatorBar();  //AFP 10-20-22
-#if defined(G0ORX_FRONTPANEL)
+#if defined(G0ORX_FRONTPANEL)  || defined(G0ORX_FRONTPANEL_2)
       UpdateVolumeField();
-#endif // G0ORX_FRONTPANEL
+#endif // G0ORX_FRONTPANEL || G0ORX_FRONTPANEL_2
+*/
       break;
 
     case SET_MODE:  // 6
@@ -199,13 +210,10 @@ int (*functionPtr[])() = { &CWOptions, &RFOptions, &VFOSelect,
       break;
 
     case MAIN_TUNE_INCREMENT:  // 8
-//      Serial.println("Tune increment selected.");
       ButtonFreqIncrement();
       break;
 
     case NOISE_REDUCTION:  // 9
-//      Serial.print("val = ");
-//      Serial.println(val);
       ButtonNR();
       break;
 
@@ -223,7 +231,6 @@ int (*functionPtr[])() = { &CWOptions, &RFOptions, &VFOSelect,
       break;
 
     case DECODER_TOGGLE:  // 13
-//      Serial.println("Decoder Toggle selected.");
       decoderFlag = !decoderFlag;
       UpdateDecoderField();
       break;
@@ -242,7 +249,7 @@ int (*functionPtr[])() = { &CWOptions, &RFOptions, &VFOSelect,
 
     case UNUSED_4:  // 17
       // temp use as PTT
-#if defined(G0ORX_FRONTPANEL)
+#if defined(G0ORX_FRONTPANEL)  || defined(G0ORX_FRONTPANEL_2)
       if(my_ptt==HIGH) {
         my_ptt=LOW;
       } else {
@@ -251,8 +258,19 @@ int (*functionPtr[])() = { &CWOptions, &RFOptions, &VFOSelect,
 #endif
       break;
 
+#if defined(G0ORX_FRONTPANEL_2)
+    case 18: // UNUSED
+      break;
+    case 19: // UNUSED
+      break;
+#endif // G0ORX_FRONTPANEL_2
+
+#if defined(G0ORX_FRONTPANEL) || defined(G0ORX_FRONTPANEL_2)
 #if defined(G0ORX_FRONTPANEL)
     case 18: // 18 - Encoder 1 SW (Volume)
+#else
+    case 20: // 20 - Encoder 1 SW (Volume)
+#endif // G0ORX_FRONTPANEL
       switch(volumeFunction) {
         case AUDIO_VOLUME:
           volumeFunction=AGC_GAIN;
@@ -267,13 +285,20 @@ int (*functionPtr[])() = { &CWOptions, &RFOptions, &VFOSelect,
           volumeFunction=NOISE_FLOOR_LEVEL;
           break;
         case NOISE_FLOOR_LEVEL:
+          volumeFunction=RF_GAIN;
+          break;
+        case RF_GAIN:
           volumeFunction=AUDIO_VOLUME;
           break;
       }
       volumeChangeFlag = true;
       break;
 
+#if defined(G0ORX_FRONTPANEL)
     case 19: // 19 - Encoder 2 SW (Filter/Menu)
+#else
+    case 21: // 21 - Encoder 2 SW (Filter/Menu)
+#endif // G0ORX_FRONTPANEL
       AGCMode++;
       if(AGCMode>4) {
         AGCMode = 0;
@@ -284,7 +309,11 @@ int (*functionPtr[])() = { &CWOptions, &RFOptions, &VFOSelect,
       UpdateAGCField();
       break;
 
+#if defined(G0ORX_FRONTPANEL)
     case 20: // 20 - Encoder 3 SW (Center Tune)
+#else
+    case 22: // 22 - Encoder 3 SW (Center Tune)
+#endif // G0ORX_FRONTPANEL
       // switch between VFO-A and VFO-B
       if (activeVFO == VFO_A) {
         centerFreq = TxRxFreq = currentFreqB;
@@ -319,7 +348,11 @@ int (*functionPtr[])() = { &CWOptions, &RFOptions, &VFOSelect,
       DrawFrequencyBarValue();
       break;
 
-    case 21:                                                      // 21 - Encoder 4 SW (Fine Tune)
+#if defined(G0ORX_FRONTPANEL)
+    case 21: // 21 - Encoder 4 SW (Fine Tune)
+#else
+    case 23: // 23 - Encoder 4 SW (Fine Tune)
+#endif // G0ORX_FRONTPANEL
       {
       // swap VFO A and B
       long tempFreq = currentFreqA;
@@ -355,7 +388,7 @@ int (*functionPtr[])() = { &CWOptions, &RFOptions, &VFOSelect,
       DrawFrequencyBarValue();
       }
       break;
-#endif // G0ORX_FRONTPANEL
+#endif // G0ORX_FRONTPANEL || G0ORX_FRONTPANEL_2
 
     default:
       break;

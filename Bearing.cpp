@@ -2,7 +2,6 @@
 #include "SDT.h"
 #endif
 
-#if !defined(EXCLUDE_BEARING)
 /*
   #define SD_CS                       BUILTIN_SDCARD        // Works on T_3.6 and T_4.1 ...
 
@@ -1380,8 +1379,6 @@ inline void Color565ToRGB(uint16_t color, uint8_t &r, uint8_t &g, uint8_t &b) {
   tft.Color565ToRGB(color, r, g, b);
 }
 
-#endif // BEARING
-
 /*****
   Purpose: Initialize the SD card
 
@@ -1406,7 +1403,6 @@ int InitializeSDCard() {
   return 1;
 }
 
-#if !defined(EXCLUDE_BEARING)
 /*****
   Purpose: Erase initialization error message
 
@@ -1631,5 +1627,3 @@ int WhichOneToUse(char ptrMaps[][50], int count) {
   tft.setTextColor(RA8875_WHITE, RA8875_BLACK);
   return temp;
 }
-
-#endif // EXCLUDE_BEARING

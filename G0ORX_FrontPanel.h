@@ -9,7 +9,8 @@
 #define AGC_GAIN 2
 #define SIDETONE_VOLUME 3
 #define NOISE_FLOOR_LEVEL 4
-#define SQUELCH_LEVEL 5
+#define RF_GAIN 5
+#define SQUELCH_LEVEL 6
 
 extern G0ORX_Rotary volumeEncoder;
 extern G0ORX_Rotary filterEncoder;
@@ -23,7 +24,5 @@ extern int G0ORXButtonPressed;
 extern void FrontPanelInit();
 extern void FrontPanelCheck();
 extern void FrontPanelSetLed(int led, uint8_t state);
-
-extern void PTT_Interrupt();
 
 #endif

@@ -50,7 +50,9 @@ extern struct maps myMapFiles[];
 #include <SPI.h>
 #include <SD.h>
 #include <Metro.h>
+#if !(defined(G0ORX_FRONTPANEL) || defined(G0ORX_FRONTPANEL_2))
 #include <Bounce.h>
+#endif // G0ORX_FRONTPANEL || G0ORX_FRONTPANEL_2
 #include <arm_math.h>
 #include <arm_const_structs.h>
 // ============ AFP 09-04-23 #include modified Si5351 library
@@ -60,9 +62,10 @@ extern struct maps myMapFiles[];
 #include <RA8875.h>                                 // https://github.com/mjs513/RA8875/tree/RA8875_t4
 #if defined(G0ORX_FRONTPANEL)
 #include "G0ORX_Rotary.h"
-#else
-#include <Rotary.h>                                 // https://github.com/brianlow/Rotary
-#endif
+#endif // G0ORX_FRONTPANEL
+#if !(defined(G0ORX_FRONTPANEL) || defined(G0ORX_FRONTPANEL_2))
+#include <Rotary.h>  // https://github.com/brianlow/Rotary^M
+#endif // G0ORX_FRONTPANEL || G0ORX_FRONTPANEL_2
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -71,16 +74,13 @@ extern struct maps myMapFiles[];
 #include <EEPROM.h>
 //======================================== Symbolic Constants for the T41 ===================================================
 #define RIGNAME                     "T41-EP SDT"
-#define NUMBER_OF_SWITCHES          18              // Number of push button switches. 16 on older boards
-#if !defined(EXCLUDE_BEARING) && !defined(EXCLUDE_BODE)
+#if defined(G0ORX_FRONTPANEL_2)
+#define NUMBER_OF_SWITCHES          20              // Number of push button switches. 16 on older boards
 #define TOP_MENU_COUNT              14              // Menus to process AFP 09-27-22, JJP 7-8-23 AFP 04-12-2
-#elif defined(EXCLUDE_BEARING) && !defined(EXCLUDE_BODE)
-#define TOP_MENU_COUNT              13
-#elif !defined(EXCLUDE_BEARING) && defined(EXCLUDE_BODE)
-#define TOP_MENU_COUNT              13
-#elif defined(EXCLUDE_BEARING) && defined(EXCLUDE_BODE)
-#define TOP_MENU_COUNT              12              // removed Bearing and Bode for memory space
-#endif // EXCLUDE_BEARING / EXCLUDE_BODE
+#else
+#define NUMBER_OF_SWITCHES          18              // Number of push button switches. 16 on older boards
+#define TOP_MENU_COUNT              14              // Menus to process AFP 09-27-22, JJP 7-8-23 AFP 04-12-2
+#endif // G0ORX_FRONTPANEL_2
 #define RIGNAME_X_OFFSET            570             // Pixel count to rig name field                                       // Says we are using a Teensy 4 or 4.1
 #define RA8875_DISPLAY              1               // Comment out if not using RA8875 display
 #define TEMPMON_ROOMTEMP            25.0f
@@ -424,6 +424,9 @@ void ShutdownTeensy(void);
 #define TFT_MISO                    12
 #define TFT_SCLK                    13
 #define TFT_RST                     255
+#if defined(G0ORX_FRONTPANEL_2)
+#define TFT_INTERRUPT 14
+#endif // G0ORX_FRONOTPANEL_2
 
 //========================================= Filter Board pins
 #define FILTERPIN80M                30    // 80M filter relay
@@ -747,7 +750,6 @@ extern float32_t HP_DC_Filter_Coeffs2[];  // AFP 11-02-22
 #define CW_SHAPING_FALL 2
 #define CW_SHAPING_ZERO 3
 
-#if !defined(EXCLUDE_BODE)
 //=================== AFP 03-30-24 V012 Bode Plot variables
 extern int numBodePoints;          //Bode
 extern float BodePlotValues[];     //Bode
@@ -809,7 +811,6 @@ void DrawPlots();
 extern int plotBodeBandFlag;
 extern float bodeResultRdB;
 extern int levelBodeChangeFlag;
-#endif // EXCLUDE_BODE
 
 
 extern long long pll_freq;
@@ -1269,7 +1270,8 @@ extern AudioConvert_F32toI16     float2Int1, float2Int2;    //Converts Float to 
  extern G0ORX_Rotary tuneEncoder;
  extern G0ORX_Rotary filterEncoder;
  extern G0ORX_Rotary fineTuneEncoder;
-#else
+#endif // G0ORX_FRONRTPANEL
+#if !(defined(G0ORX_FRONTPANEL) || defined(G0ORX_FRONTPANEL_2))
 extern Bounce decreaseBand;
 extern Bounce increaseBand;
 extern Bounce modeSwitch;
@@ -1291,7 +1293,7 @@ extern Rotary fineTuneEncoder;  // (4,  5);
 //extern Rotary fineTuneEncoder;
 //extern Encoder filterEncoder;
 //extern Encoder volumeEncoder;
-#endif // G0ORX_FRONTPANEL
+#endif // G0ORX_FRONTPANEL || G0ORX_FRONTPANLE_2
 
 extern Metro ms_500;
 extern Metro ms_300000;// Set up a Metro
@@ -1353,7 +1355,7 @@ extern struct config_t {
   float currentMicRelease   = 2.0;
   int currentMicGain        = -10;
 
-  int switchValues[18];
+  int switchValues[NUMBER_OF_SWITCHES];
 
   float LPFcoeff             = 0.0;                   // 4 bytes
   float NR_PSI               = 0.0;                   // 4 bytes
@@ -2245,14 +2247,14 @@ void AMDecodeSAM(); // AFP 11-03-22
 void AssignEEPROMObjectToVariable();
 
 int  BandOptions();
-#if !defined(EXCLUDE_BEARING)
 float BearingHeading(char *dxCallPrefix);
 int  BearingMaps();
-
 void bmpDraw(const char *filename, int x, int y);
-#endif // EXCLUDE_BEARING
+void ButtonBandChange(int increment);
+#ifdef OLD_BAND_UP_DOWN
 void ButtonBandDecrease();
 void ButtonBandIncrease();
+#endif
 int  ButtonDemod();
 void ButtonDemodMode();
 void ButtonFilter();
@@ -2423,6 +2425,11 @@ void SetCompressionRatio();
 void SetCompressionAttack();
 void SetCompressionRelease();
 int  SetPrimaryMenuIndex();
+
+#if defined(G0ORX_FRONTPANEL_2)
+extern int touchPrimaryMenuIndex;
+extern int touchSecondaryMenuIndex;
+#endif // G0ORX_FRONTPANEL_2
 
 void SaveAnalogSwitchValues();
 int  SDDataCheck();

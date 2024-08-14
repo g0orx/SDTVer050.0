@@ -2,7 +2,6 @@
 #include "SDT.h"
 #endif
 
-#if !defined(EXCLUDE_BODE)
 /*==================================
 Notes about the Bode Plotter code.
 * Most  of the Bode code is stand-alone, not using most of the resources of the T41 for things like Plotting, drawing the plot container, processing the signal, etc.
@@ -111,7 +110,16 @@ for(int j=0;j<63;j++){
 
 //Serial.print("currentRF_OutAtten=  ");Serial.println((float)currentRF_OutAtten);
     for (int iFreq1 = 0; iFreq1 < numBodePoints; iFreq1++) {
+#if defined(G0ORX_FRONTPANEL_2)
+      if (centerTuneFlag == 1) {
+        DrawBandWidthIndicatorBar();
+        ShowFrequency();
+        SetFreq();
+       centerTuneFlag = 0;
+      }
+#else
       EncoderCenterTune();
+#endif // G0ORX_FRONTPANEL_2
       if (freqBodeChangeFlag == 1) {
         DrawBodePlotContainer();
         freqBodeChangeFlag = 0;
@@ -213,7 +221,7 @@ for(int j=0;j<63;j++){
           case BAND_UP:
             EraseMenus();
             if (currentBand < 5) digitalWrite(bandswitchPins[currentBand], LOW);  // Added if so unused GPOs will not be touched.  KF5N October 16, 2023.
-            ButtonBandIncrease();
+            ButtonBandChange(+1);
             if (currentBand < 5) digitalWrite(bandswitchPins[currentBand], HIGH);
             DrawBodePlotContainer();
             tft.setTextColor(RA8875_LIGHT_ORANGE);
@@ -223,7 +231,7 @@ for(int j=0;j<63;j++){
           case BAND_DN:
             DrawBodePlotContainer();
             if (currentBand < 5) digitalWrite(bandswitchPins[currentBand], LOW);  // Added if so unused GPOs will not be touched.  KF5N October 16, 2023.
-            ButtonBandIncrease();
+            ButtonBandChange(+1);
             if (currentBand < 5) digitalWrite(bandswitchPins[currentBand], HIGH);
             DrawBodePlotContainer();
             tft.setTextColor(RA8875_LIGHT_ORANGE);
@@ -702,6 +710,7 @@ long SetBodeStop() {
 *****/
 
 long MoveStopFreqBode() {
+#if !defined (G0ORX_FRONTPANEL_2)
   char result;
 
   result = fineTuneEncoder.process();  // Read the encoder
@@ -715,10 +724,13 @@ long MoveStopFreqBode() {
       fineTuneEncoderMove = -1L;
     }
   }
+#endif // G0ORX_FRONTPANEL_2
 
   freqStopBode += 1000000L * fineTuneEncoderMove;
 
+#if defined (G0ORX_FRONTPANEL_2)
+  fineTuneEncoderMove = 0;
+#endif // G0ORX_FRONTPANEL_2
+
   return freqStopBode;
 }
-
-#endif // EXCLUDE_BODE

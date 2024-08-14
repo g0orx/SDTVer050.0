@@ -164,7 +164,7 @@ void ResetTuning() {
 
 void SetFreq() {  //AFP
 
-#if defined(G0ORX_FRONTPANEL)
+#if defined(G0ORX_FRONTPANEL) || defined(G0ORX_FRONTPANEL_2)
   __disable_irq();
 #endif // G0ORX_FRONTPANEL
 
@@ -271,7 +271,7 @@ void SetFreq() {  //AFP
   }
 #endif
 
-#if defined(G0ORX_FRONTPANEL)
+#if defined(G0ORX_FRONTPANEL) || defined(G0ORX_FRONTPANEL_2)
   __enable_irq();
 #endif // G0ORX_FRONTPANEL
   //=====================  AFP 10-03-22 =================
@@ -319,7 +319,9 @@ int DoSplitVFO() {
   tft.setCursor(INFORMATION_WINDOW_X + 60, INFORMATION_WINDOW_Y + 90);
   tft.print(splitOffset);
   tft.print("Hz  ");
-
+#if defined(G0ORX_FRONTPANEL_2)
+  calibrateFlag=1;
+#endif //G0ORX_FRONTPANEL_2
   while (true) {
     if (filterEncoderMove != 0) {  // Changed encoder?
       splitOffset += filterEncoderMove * chunk;
@@ -340,6 +342,9 @@ int DoSplitVFO() {
       break;
     }
   }
+#if defined(G0ORX_FRONTPANEL_2)
+  calibrateFlag=0;
+#endif //G0ORX_FRONTPANEL_2
   currentFreqB = currentFreqA + splitOffset;
   FormatFrequency(currentFreqB, freqBuffer);
   tft.fillRect(FREQUENCY_X_SPLIT, FREQUENCY_Y - 12, VFOB_PIXEL_LENGTH, FREQUENCY_PIXEL_HI, RA8875_BLACK);

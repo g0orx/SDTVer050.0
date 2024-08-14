@@ -15,9 +15,6 @@
 // Uncomment to see CAT messages on the Serial Output
 //#define DEBUG_CAT
 
-#if !defined(G0ORX_FRONTPANEL)
-int my_ptt=HIGH; // active LOW
-#endif // G0ORX_FRONTPANEL
 bool catTX=false;
 static char catCommand[128];
 static int catCommandIndex=0;

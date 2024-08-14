@@ -713,6 +713,16 @@ int ChangeBand(long f, bool updateRelays) {
     digitalWrite(bandswitchPins[b], HIGH);
   }
 
+  // Set the LPF bands, added by KI3P
+#ifdef K9HZ_LPF
+  setLPFBand(currentBand);
+#endif // K9HZ_LPF
+
+  // Set the BPF bands, added by KI3P
+#ifdef V12BPF
+  setBPFBand(currentBand);
+#endif // V12BPF
+
 #if defined(V12HWR)
   RFControl_Enable_Prescaler(currentBand==BAND_630M || currentBand==BAND_160M);
 #endif // V12HWR

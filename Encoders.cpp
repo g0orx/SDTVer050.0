@@ -85,7 +85,7 @@ void FilterSetSSB() {
   tft.writeTo(L1);  // Exit function in layer 1.  KF5N August 3, 2023
 }
 
-
+#if !defined(G0ORX_FRONTPANEL_2)
 /*****
   Purpose: EncoderCenterTune
   Parameter list:
@@ -190,7 +190,7 @@ void EncoderVolume()  //============================== AFP 10-22-22  Begin new
       adjustVolEncoder = -1;
       break;
   }
-#endif // G0ORX_FROMNTPANEL
+#endif // G0ORX_FRONTPANEL
 
 #if defined(G0ORX_FRONTPANEL)
   switch(volumeFunction) {
@@ -246,6 +246,14 @@ void EncoderVolume()  //============================== AFP 10-22-22  Begin new
             currentNoiseFloor[currentBand]=100;
           }
           break;
+        case RF_GAIN:
+          bands[currentBand].RFgain += adjustVolEncoder;
+          if(bands[currentBand].RFgain<0) {
+            bands[currentBand].RFgain=0;
+          } else if(bands[currentBand].RFgain>15) {
+            bands[currentBand].RFgain=15;
+          }
+          break;
       }
 #else
   audioVolume += adjustVolEncoder;
@@ -281,7 +289,7 @@ void EncoderVolume()  //============================== AFP 10-22-22  Begin new
   volumeChangeFlag = true;  // Need this because of unknown timing in display updating.
 
 }  //============================== AFP 10-22-22  End new
-
+#endif // G0ORX_FRONTPANEL_2
 
 /*****
   Purpose: Use the encoder to change the value of a number in some other function
@@ -298,6 +306,8 @@ void EncoderVolume()  //============================== AFP 10-22-22  Begin new
 float GetEncoderValueLive(float minValue, float maxValue, float startValue, float increment, char prompt[])  //AFP 10-22-22
 {
   float currentValue = startValue;
+
+Serial.println(String(__FUNCTION__)+String(": ")+String(prompt)+String(" start=")+String(startValue));
   tft.setFontScale((enum RA8875tsize)1);
   tft.setTextColor(RA8875_WHITE);
   tft.fillRect(250, 0, 285, CHAR_HEIGHT, RA8875_BLACK);  // Increased rectangle size to full erase value.  KF5N August 12, 2023
@@ -403,7 +413,9 @@ int SetWPM() {
   tft.print("current WPM:");
   tft.setCursor(SECONDARY_MENU_X + 200, MENUS_Y + 1);
   tft.print(currentWPM);
-
+#if defined(G0ORX_FRONTPANEL_2)
+  calibrateFlag = 1; 
+#endif // G0ORX_FRONTPANEL_2
   while (true) {
     if (filterEncoderMove != 0) {       // Changed encoder?
       currentWPM += filterEncoderMove;  // Yep
@@ -429,6 +441,9 @@ int SetWPM() {
       break;
     }
   }
+#if defined(G0ORX_FRONTPANEL_2)
+  calibrateFlag = 0; 
+#endif // G0ORX_FRONTPANEL_2
   return currentWPM;
 }
 
@@ -455,7 +470,9 @@ long SetTransmitDelay()  // new function JJP 9/1/22
   tft.print("current delay:");
   tft.setCursor(SECONDARY_MENU_X + 79, MENUS_Y + 1);
   tft.print(cwTransmitDelay);
-
+#if defined(G0ORX_FRONTPANEL_2)
+  calibrateFlag = 1; 
+#endif // G0ORX_FRONTPANEL_2
   while (true) {
     if (filterEncoderMove != 0) {                  // Changed encoder?
       lastDelay += filterEncoderMove * increment;  // Yep
@@ -480,8 +497,13 @@ long SetTransmitDelay()  // new function JJP 9/1/22
   }
   tft.setTextColor(RA8875_WHITE);
   EraseMenus();
+#if defined(G0ORX_FRONTPANEL_2)
+  calibrateFlag = 0; 
+#endif // G0ORX_FRONTPANEL_2
   return cwTransmitDelay;
 }
+
+#if !defined(G0ORX_FRONTPANEL_2)
 /*****
   Purpose: Fine tune control.
 
@@ -585,3 +607,4 @@ FASTRUN  // Causes function to be allocated in RAM1 at startup for fastest perfo
     filter_pos = last_filter_pos - 5 * filterEncoderMove;  // AFP 10-22-22
   }                                                        // AFP 10-22-22
 }
+#endif // G0ORX_FRONTPANEL_2

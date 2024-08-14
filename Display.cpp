@@ -56,7 +56,7 @@ void ShowName() {
   tft.setTextColor(RA8875_YELLOW);
   tft.setCursor(RIGNAME_X_OFFSET - 20, 1);
   tft.print(RIGNAME);
-#if defined(G0ORX_FRONTPANEL) || defined(G0ORX_CAT)
+#if defined(G0ORX_FRONTPANEL) || defined(G0ORX_FRONTPANEL_2) || defined(G0ORX_CAT)
   int x = (strlen(RIGNAME)*tft.getFontWidth());
 #endif // G0ORX_FRONTPANEL
   tft.setFontScale(0);
@@ -67,7 +67,7 @@ void ShowName() {
   tft.setTextColor(RA8875_RED);  // Make it red
 #endif
   tft.print(VERSION);
-#if defined(G0ORX_FRONTPANEL) || defined(G0ORX_CAT)
+#if defined(G0ORX_FRONTPANEL) || defined(G0ORX_FRONTPANEL_2) || defined(G0ORX_CAT)
   tft.setCursor(RIGNAME_X_OFFSET - 20 + x, 1+tft.getFontHeight());
   tft.print(" G0ORX");
 #endif // G0ORX_FRONTPANEL
@@ -124,7 +124,17 @@ void ShowSpectrum()  //AFP Extensively Modified 3-15-21 Adjusted 12-13-21 to ali
     if (T41State == SSB_RECEIVE || T41State == CW_RECEIVE) {  // AFP 08-24-22
       ProcessIQData();                                        // Call the Audio process from within the display routine to eliminate conflicts with drawing the spectrum and waterfall displays
     }
+#ifdef G0ORX_FRONTPANEL_2
+    if( centerTuneFlag== 1) {
+      SetFreq();  //  Change to receiver tuning process.  KF5N July 22, 2023
+      DrawBandWidthIndicatorBar();  // AFP 10-20-22
+      ShowFrequency();
+      BandInformation();
+      centerTuneFlag = 0;
+    }
+#else
     EncoderCenterTune();                                      // Moved the tuning encoder to reduce lag times and interference during tuning.
+#endif // G0ORX_FRONTPANEL_2
     y_new   = pixelnew[x1];
     y1_new  = pixelnew[x1 - 1];
     y_old   = pixelold[x1];  // pixelold spectrum is saved by the FFT function prior to a new FFT which generates the pixelnew spectrum.  KF5N
@@ -1023,7 +1033,7 @@ void UpdateVolumeField() {
 
   tft.setCursor(BAND_INDICATOR_X + 20, BAND_INDICATOR_Y);  // Volume
   tft.setTextColor(RA8875_WHITE);
-#if defined(G0ORX_FRONTPANEL)
+#if defined(G0ORX_FRONTPANEL) || defined(G0ORX_FRONTPANEL_2)
   tft.fillRect(BAND_INDICATOR_X + 20, BAND_INDICATOR_Y, tft.getFontWidth() * 4, tft.getFontHeight(), RA8875_BLACK);
   switch(volumeFunction) {
     case AUDIO_VOLUME:
@@ -1036,20 +1046,23 @@ void UpdateVolumeField() {
       tft.print("Mic:");
       break;
     case SIDETONE_VOLUME:
-      tft.print("STn:");
+      tft.print("STN:");
       break;
     case NOISE_FLOOR_LEVEL:
-      tft.print("NFl:");                 
+      tft.print("NFL:");                 
+      break;
+    case RF_GAIN:
+      tft.print("RF:");                 
       break;
   }
 #else
   tft.print("Vol:");
-#endif // G0ORX_FRONTPANEL
+#endif // G0ORX_FRONTPANEL || G0ORX_FRONTPANEL_2
 
   tft.setTextColor(RA8875_GREEN);
   tft.fillRect(BAND_INDICATOR_X + 90, BAND_INDICATOR_Y, tft.getFontWidth() * 3 + 2, tft.getFontHeight(), RA8875_BLACK);
   tft.setCursor(FIELD_OFFSET_X, BAND_INDICATOR_Y);
-#if defined(G0ORX_FRONTPANEL)
+#if defined(G0ORX_FRONTPANEL) || defined(G0ORX_FRONTPANEL_2)
   switch(volumeFunction) {
     case AUDIO_VOLUME:
       tft.print(audioVolume);
@@ -1069,10 +1082,13 @@ void UpdateVolumeField() {
       DrawSpectrumDisplayContainer();
       ShowSpectrumdBScale();
       break;
+    case RF_GAIN:
+      tft.print(bands[currentBand].RFgain);
+      break;
   }
 #else
   tft.print(audioVolume);
-#endif // G0ORX_FRONTPANEL
+#endif // G0ORX_FRONTPANEL || G0ORX_FRONTPANEL_2
 
 }
 
@@ -1521,7 +1537,7 @@ void SetFavoriteFrequencies() {
       tft.setCursor(BAND_INDICATOR_X + 30, BAND_INDICATOR_Y + (offset * index) + 5);
       tft.print(currentFreq);
     }
-#if defined(G0ORX_FRONTPANEL)
+#if defined(G0ORX_FRONTPANEL) || defined(G0ORX_FRONTPANEL_2)
     int val = ReadSelectedPushButton();                                  // Read pin that controls all switches^
     val = ProcessButtonPress(val);
     if (val == MENU_OPTION_SELECT) {
@@ -1600,7 +1616,9 @@ void RedrawDisplayScreen() {
   DisplayIncrementField();
   AGCPrep();
   UpdateAGCField();
+#if !defined(G0ORX_FRONTPANEL_2)
   EncoderVolume();
+#endif
   SetBand();
   BandInformation();
   ShowCurrentPowerSetting();
@@ -1784,10 +1802,10 @@ void ShowTransmitReceiveStatus() {
     tft.fillRect(X_R_STATUS_X, X_R_STATUS_Y, 55, 25, RA8875_RED);
     tft.setCursor(X_R_STATUS_X + 4, X_R_STATUS_Y - 5);
     tft.print("XMT");
-#if defined(G0ORX_FRONTPANEL)
+#if defined(G0ORX_FRONTPANEL) || defined(G0ORX_FRONTPANEL_2)
     FrontPanelSetLed(0,1);
     FrontPanelSetLed(1,0);
-#endif // G0ORX_FRONTPANEL
+#endif // G0ORX_FRONTPANEL || G0ORX_FRONTPANEL_2
 #ifdef G0ORX_AUDIO_DISPLAY 
     ClearTXAudio();
 #endif
@@ -1795,10 +1813,10 @@ void ShowTransmitReceiveStatus() {
     tft.fillRect(X_R_STATUS_X, X_R_STATUS_Y, 55, 25, RA8875_GREEN);
     tft.setCursor(X_R_STATUS_X + 4, X_R_STATUS_Y - 5);
     tft.print("REC");
-#if defined(G0ORX_FRONTPANEL)
+#if defined(G0ORX_FRONTPANEL) || defined(G0ORX_FRONTPANEL_2)
     FrontPanelSetLed(0,0);
     FrontPanelSetLed(1,1);
-#endif // G0ORX_FRONTPANEL
+#endif // G0ORX_FRONTPANEL || G0ORX_FRONTPANEL_2
 
   }
 }
@@ -1835,7 +1853,7 @@ static float32_t audio_sample[256];
 
 void ShowTXAudio() {
     int x;
-
+    float32_t sample;
     float32_t max_sample=mic_audio_buffer[0];
     float32_t min_sample=mic_audio_buffer[0];
 
@@ -1854,7 +1872,7 @@ void ShowTXAudio() {
     }
     x = BAND_INDICATOR_X - 8 + 251;
     tft.drawLine(x, 188+audio_sample[251], x, 188-audio_sample[251], RA8875_BLACK);
-    audio_sample[251]=max_sample * 100;
+    audio_sample[251]=max_sample * 5000;  // need to adjust
     tft.drawLine(x, 188+audio_sample[251], x, 188-audio_sample[251], RA8875_YELLOW);
 
 }

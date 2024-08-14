@@ -29,10 +29,16 @@ int CalibrateOptions(int IQChoice) {
     case 0:  // Calibrate Frequency  - uses WWV
       freqCorrectionFactor = GetEncoderValueLive(-200000, 200000, freqCorrectionFactor, increment, (char *)"Freq Cal: ");
       if (freqCorrectionFactor != freqCorrectionFactorOld) {
+#if defined(G0ORX_FRONTPANEL) || defined(G0ORX_FRONTPANEL_2)
+        __disable_irq();
+#endif // G0ORX_FRONTPANEL
         si5351.init(SI5351_CRYSTAL_LOAD_10PF, Si_5351_crystal, freqCorrectionFactor);
         si5351.drive_strength(SI5351_CLK0, SI5351_DRIVE_8MA);  // KF5N July 10 2023
         si5351.drive_strength(SI5351_CLK1, SI5351_DRIVE_8MA);
         si5351.drive_strength(SI5351_CLK2, SI5351_DRIVE_2MA);  // KF5N July 10 2023
+#if defined(G0ORX_FRONTPANEL) || defined(G0ORX_FRONTPANEL_2)
+        __enable_irq();
+#endif // G0ORX_FRONTPANEL
         SetFreq();
         MyDelay(10L);
         freqCorrectionFactorOld = freqCorrectionFactor;
@@ -288,7 +294,7 @@ int IQOptions()  //============================== AFP 10-22-22  All new
   calibrateFlag = 1;
   //const char *IQOptions[] = { "Freq Cal", "CW PA Cal", "Rec Cal", "Xmit Cal", "SSB PA Cal", "Cancel" };  //AFP 10-21-22
   //const char *IQOptions[] = {"Rec Cal", "Xmit Cal", "Freq Cal", "SSB PA Cal", "CW PA Cal", "Cancel"}; //AFP 10-21-22
-  IQChoice = SubmenuSelect(secondaryChoices[11], 6, 0);  //AFP 10-21-22
+  //IQChoice = SubmenuSelect(secondaryChoices[11], 6, 0);  //AFP 10-21-22
   IQChoice = secondaryMenuIndex;
   CalibrateOptions(IQChoice);
   return IQChoice;
@@ -380,6 +386,9 @@ void ProcessEqualizerChoices(int EQType, char *title) {
                  barWidth,                          // Set bar width
                  yLevel[columnIndex],               // Draw new bar
                  RA8875_MAGENTA);
+#if defined(G0ORX_FRONTPANEL_2)
+    calibrateFlag=1;
+#endif // G0ORX_FRONTPANEL_2
     while (true) {
       newValue = yLevel[columnIndex];  // Get current value
       if (filterEncoderMove != 0) {
@@ -408,6 +417,9 @@ void ProcessEqualizerChoices(int EQType, char *title) {
         }
       }
       filterEncoderMove = 0;
+#if defined(G0ORX_FRONTPANEL_2)
+      calibrateFlag=0;
+#endif // G0ORX_FRONTPANEL_2
       MyDelay(200L);
 
       val = ReadSelectedPushButton();  // Read the ladder value
@@ -556,6 +568,9 @@ int MicGainSet() {
       tft.print("Mic Gain:");
       tft.setCursor(SECONDARY_MENU_X + 180, MENUS_Y + 1);
       tft.print(currentMicGain);
+#if defined(G0ORX_FRONTPANEL_2)
+      calibrateFlag=1;
+#endif // G0ORX_FRONTPANEL_2
       while (true) {
         if (filterEncoderMove != 0) {
           currentMicGain += ((float)filterEncoderMove);
@@ -574,6 +589,9 @@ int MicGainSet() {
         if (val == MENU_OPTION_SELECT) {  // Make a choice??
           EEPROMData.currentMicGain = currentMicGain;
           EEPROMWrite();
+#if defined(G0ORX_FRONTPANEL_2)
+          calibrateFlag=0;
+#endif // G0ORX_FRONTPANEL_2
           break;
         }
       }

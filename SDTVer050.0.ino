@@ -558,6 +558,15 @@ V046d June 27, 2023  Jack Purdum (W8TEE) and includes changes by Greg:
 #include "SDT.h"
 #endif
 
+#if defined(G0ORX_FRONTPANEL) || defined(G0ORX_FRONTPANEL_2) || defined(G0ORX_CAT)
+int my_ptt=HIGH;  // Active LOW
+
+void PTT_Interrupt() {
+  my_ptt = digitalRead(PTT);
+} 
+#endif
+
+
 /*                                  Presented here so you can see how the members allign
 struct maps {
   char mapNames[50];
@@ -659,12 +668,8 @@ const char *topMenus[] = { "CW Options", "RF Set", "VFO Select",
                            "EEPROM", "AGC", "Spectrum Options",
                            "Noise Floor", "Mic Gain", "Mic Comp",
                            "EQ Rec Set", "EQ Xmt Set", "Calibrate",
-#if !defined(EXCLUDE_BEARING)
                            "Bearing",
-#endif // EXCLUDE_BEARING
-#if !defined(EXCLUDE_BODE)
                            "Bode"
-#endif // EXCLUDE_BODE
                            };  //=================== AFP 03-30-24 V012 Bode Plot
 
 const char *CWFilter[] = { "0.8kHz", "1.0kHz", "1.3kHz", "1.8kHz", "2.0kHz", " Cancel " };
@@ -673,12 +678,8 @@ int (*functionPtr[])() = { &CWOptions, &RFOptions, &VFOSelect,
                            &EEPROMOptions, &AGCOptions, &SpectrumOptions,
                            &ButtonSetNoiseFloor, &MicGainSet, &MicOptions,
                            &EqualizerRecOptions, &EqualizerXmtOptions, &IQOptions,
-#if !defined(EXCLUDE_BEARING)
                            &BearingMaps,
-#endif // EXCLUDE_BEARING
-#if !defined(EXCLUDE_BODE)
                            &BodeOptions
-#endif // EXCLUDE_BODE
                            };  //=================== AFP 03-30-24 V012 Bode Plot
 
 
@@ -705,12 +706,8 @@ const char *secondaryChoices[][14] = {
   { "On", "Off", "EQRcSet", "Cancel" },                                                                                     // index = 9                                                                                // EQ Rec         9
   { "On", "Off", "EQTxSet", "Cancel" },                                                                                     // EQ Trx         10
   { "Freq Cal", "CW PA Cal", "Rec Cal", "Xmit Cal", "SSB PA Cal", "Cancel" },                                               // Calibrate      11
-#if !defined(EXCLUDE_BEARING)  
-  { "Set Prefix", "Cancel" },
-#endif // EXCLUDE_BEARING
-#if !defined(EXCLUDE_BODE)                                                                                            // Bearing        12
+  { "Set Prefix", "Cancel" },                                                                                         // Bearing        12
   { "Run Bode Plot", "Set Start F.", "Set End F.", "Plot Ref.", "Cancel" }                                                 //=================== AFP 03-30-24 V012 Bode Plot                                                                                      //=================== AFP 04-12-24 V012 Attenuators                                                                                            // 13
-#endif // EXCLUDE_BODE
 };
 
 
@@ -804,11 +801,19 @@ AudioConnection patchCord19(modeSelectOutExL, 0, i2s_quadOut, 0);  //Ex out
 AudioConnection patchCord20(modeSelectOutExR, 0, i2s_quadOut, 1);
 AudioConnection patchCord21(modeSelectOutL, 0, i2s_quadOut, 2);  //Rec out
 AudioConnection patchCord22(modeSelectOutR, 0, i2s_quadOut, 3);
-
 AudioConnection patchCord23(Q_out_L_Ex, 0, modeSelectOutL, 1);  //Rec out Queue for sidetone
 AudioConnection patchCord24(Q_out_R_Ex, 0, modeSelectOutR, 1);
 
 // ================================== AFP 11-01-22
+
+// G0ORX - Added audio connection to USB Audio
+AudioOutputUSB           usbAudioOut;
+AudioConnection          patchUSB1Out(modeSelectOutL, 0, usbAudioOut, 0);
+AudioConnection          patchUSB2Out(modeSelectOutR, 0, usbAudioOut, 1);
+
+AudioInputUSB            usbAudioIn;
+AudioConnection          patchUSB1In(usbAudioIn, 0, modeSelectInExL, 0);
+AudioConnection          patchUSB2In(usbAudioIn, 1, modeSelectInExR, 0);
 
 // ===================
 
@@ -820,7 +825,7 @@ AudioConnection patchCord24(Q_out_R_Ex, 0, modeSelectOutR, 1);
 AudioControlSGTL5000 sgtl5000_2;
 // ===========================  AFP 08-22-22 end
 
-#if !defined(G0ORX_FRONTPANEL)
+#if !(defined(G0ORX_FRONTPANEL) || defined(G0ORX_FRONTPANEL_2))
 Bounce decreaseBand = Bounce(BAND_MENUS, 50);
 Bounce increaseBand = Bounce(BAND_PLUS, 50);
 Bounce modeSwitch = Bounce(CHANGE_MODE, 50);
@@ -840,7 +845,7 @@ Rotary volumeEncoder = Rotary(VOLUME_ENCODER_A, VOLUME_ENCODER_B);        //( 2,
 Rotary tuneEncoder = Rotary(TUNE_ENCODER_A, TUNE_ENCODER_B);              //(16, 17)
 Rotary filterEncoder = Rotary(FILTER_ENCODER_A, FILTER_ENCODER_B);        //(15, 14)
 Rotary fineTuneEncoder = Rotary(FINETUNE_ENCODER_A, FINETUNE_ENCODER_B);  //( 4,  5)
-#endif // G0ORX_FRONTPANEL
+#endif // G0ORX_FRONTPANEL || G0ORX_FRONTPANEL_2
 
 Metro ms_500 = Metro(500);  // Set up a Metro
 Metro ms_300000 = Metro(300000);
@@ -860,7 +865,6 @@ RA8875 tft = RA8875(RA8875_CS, RA8875_RESET);
 
 SPISettings settingsA(70000000UL, MSBFIRST, SPI_MODE1);
 
-#if !defined(EXCLUDE_BODE)
 //=================== AFP 03-30-24 V012 Bode Plot variables
 
 float BodePlotValues[1000];     // Bode
@@ -903,8 +907,6 @@ int BodePlotFlag = 0;
 int plotBodeBandFlag = 0;
 float bodeResultRdB;
 int levelBodeChangeFlag;
-#endif // BODE
-
 
 int valPin;
 
@@ -1584,9 +1586,9 @@ int attenuator = 0;
 int attack_buffsize;
 int audioVolume = 30;  // KF5N JJP 7/14/23
 int audioVolumeOld2 = 30;
-#if defined(G0ORX_FRONTPANEL)
+#if defined(G0ORX_FRONTPANEL) || defined(G0ORX_FRONTPANEL_2)
 int volumeFunction = AUDIO_VOLUME; // G0ORX
-#endif // G0ORX_FRONTPANEL
+#endif // G0ORX_FRONTPANEL || G0ORX_FRONTPANEL_2
 int audioYPixel[256];  // Greg was 1024 2/26/2023
 int audioPostProcessorCells[AUDIO_POST_PROCESSOR_BANDS];
 
@@ -1716,7 +1718,7 @@ unsigned tcr5;
 unsigned tcr2div;
 
 int32_t FFT_shift = 2048;
-long long freqCorrectionFactor = 68000LL;
+long long freqCorrectionFactor = 0LL; // G0ORX 68000LL;
 long long freqCorrectionFactorOld = 68000LL;
 int32_t IFFreq = SR[SampleRate].rate / 4;  // IF (intermediate) frequency
 int32_t IF_FREQ1 = 0;
@@ -2165,7 +2167,7 @@ time_t getTeensy3Time() {
 
 //#pragma GCC diagnostic ignored "-Wunused-variable"
 
-PROGMEM
+//PROGMEM
 //==================================================================================
 
 /*****
@@ -2193,8 +2195,8 @@ void Codec_gain() {
           bands[currentBand].RFgain = 0;
         }
         timer = 0;  // reset the adjustment timer
-        AudioNoInterrupts();
-        AudioInterrupts();
+        //AudioNoInterrupts();
+        //AudioInterrupts();
         if (Menu2 == MENU_RF_GAIN) {
           //         ShowMenu(1);
         }
@@ -2209,8 +2211,8 @@ void Codec_gain() {
       if (bands[currentBand].RFgain > 15) {
         bands[currentBand].RFgain = 15;
       }
-      AudioNoInterrupts();
-      AudioInterrupts();
+      //AudioNoInterrupts();
+      //AudioInterrupts();
     }
   }
   half_clip = 0;     // clear "half clip" indicator that tells us that we should decrease gain
@@ -2655,6 +2657,12 @@ void Splash() {
   tft.print("Includes: Front Panel by John Melton, G0ORX");
 #endif // G0ORX_FRONTPANLE
 
+#ifdef G0ORX_FRONTPANEL_2
+  tft.setFontScale(1);
+  tft.setCursor(0, YPIXELS / 4 + 180);
+  tft.print("Includes: Pico Front Panel by John Melton, G0ORX");
+#endif
+
   MyDelay(SPLASH_DELAY);
   tft.fillWindow(RA8875_BLACK);
 }
@@ -2674,7 +2682,7 @@ void setup() {
   Serial.begin(9600);
 
   if (CrashReport) {
-    Serial1.println(CrashReport);
+    Serial.println(CrashReport);
   }
 
 #if defined(G0ORX_CAT)
@@ -2707,6 +2715,14 @@ void setup() {
   mcp.pinMode(15, OUTPUT);
 */
 
+  // G0ORX shut unused RX mixer channels
+  modeSelectInL.gain(1,0);
+  modeSelectInL.gain(2,0);
+  modeSelectInL.gain(3,0);
+  modeSelectInR.gain(1,0);
+  modeSelectInR.gain(2,0);
+  modeSelectInR.gain(3,0);
+
   sgtl5000_1.setAddress(LOW);
   sgtl5000_1.enable();
   AudioMemory(500);  //  Increased to 450 from 400.  Memory was hitting max.  KF5N August 31, 2023
@@ -2729,14 +2745,17 @@ void setup() {
   pinMode(MUTE, OUTPUT);
   digitalWrite(MUTE, LOW);
   pinMode(PTT, INPUT_PULLUP);
-#if !defined(G0ORX_FRONTPANEL)
+#if !(defined(G0ORX_FRONTPANEL) || defined(G0ORX_FRONTPANEL_2))
   pinMode(BUSY_ANALOG_PIN, INPUT);
   pinMode(FILTER_ENCODER_A, INPUT);
   pinMode(FILTER_ENCODER_B, INPUT);
-#endif // G0ORX_FRONTPANEL
+#endif // G0ORX_FRONTPANEL || G0ORX_FRONTPANEL_2
   pinMode(OPTO_OUTPUT, OUTPUT);
   pinMode(KEYER_DIT_INPUT_TIP, INPUT_PULLUP);
   pinMode(KEYER_DAH_INPUT_RING, INPUT_PULLUP);
+#if defined(G0ORX_FRONTPANEL_2)
+  pinMode(TFT_INTERRUPT, INPUT_PULLUP);
+#endif // G0ORX_FRONTPANEL_2
   pinMode(TFT_MOSI, OUTPUT);
   digitalWrite(TFT_MOSI, HIGH);
   pinMode(TFT_SCLK, OUTPUT);
@@ -2763,7 +2782,7 @@ void setup() {
   *(digital_pin_to_info_PGM + 11)->pad = iospeed_display;  //MOSI
   *(digital_pin_to_info_PGM + TFT_CS)->pad = iospeed_display;
 
-#if !defined(G0ORX_FRONTPANEL)
+#if !(defined(G0ORX_FRONTPANEL) || defined(G0ORX_FRONTPANEL_2))
   tuneEncoder.begin(true);
   volumeEncoder.begin(true);
   attachInterrupt(digitalPinToInterrupt(VOLUME_ENCODER_A), EncoderVolume, CHANGE);
@@ -2775,10 +2794,10 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(FINETUNE_ENCODER_A), EncoderFineTune, CHANGE);
   attachInterrupt(digitalPinToInterrupt(FINETUNE_ENCODER_B), EncoderFineTune, CHANGE);
   tuneEncoder.begin(true);
-#endif // G0ORX_FRONTPANEL
-#if defined(G0ORX_FRONTPANEL)
+#endif // G0ORX_FRONTPANEL || G0ORX_FRONTPANEL_2
+#if defined(G0ORX_FRONTPANEL) || defined(G0ORX_FRONTPANEL_2)
   attachInterrupt(digitalPinToInterrupt(PTT), PTT_Interrupt, CHANGE);
-#endif
+#endif // G0ORX_FRONTPANEL || G0ORX_FRONTPANEL_2
   attachInterrupt(digitalPinToInterrupt(KEYER_DIT_INPUT_TIP), KeyTipOn, CHANGE);  // Changed to keyTipOn from KeyOn everywhere JJP 8/31/22
   attachInterrupt(digitalPinToInterrupt(KEYER_DAH_INPUT_RING), KeyRingOn, CHANGE);
 
@@ -2951,6 +2970,10 @@ void setup() {
   FrontPanelInit();
 #endif // G0ORX_FRONTPANEL
 
+#if defined(G0ORX_FRONTPANEL_2)
+  FrontPanel2Init();
+#endif // G0ORX_FRONTPANEL_2
+
   sdCardPresent = SDPresentCheck();  // JJP 7/18/23
   lastState = 1111;                  // To make sure the receiver will be configured on the first pass through.  KF5N September 3, 2023
   decodeStates = state0;             // Initialize the Morse decoder.
@@ -3005,13 +3028,13 @@ FASTRUN void loop()  // Replaced entire loop() with Greg's code  JJP  7/14/23
 
 
   //  State detection
-#if defined(G0ORX_FRONTPANEL) || defined(G0ORX_CAT)
+#if defined(G0ORX_FRONTPANEL) | defined(G0ORX_FRONTPANEL_2) || defined(G0ORX_CAT)
   if (xmtMode == SSB_MODE && my_ptt == HIGH) radioState = SSB_RECEIVE_STATE;
   if (xmtMode == SSB_MODE && my_ptt == LOW) radioState = SSB_TRANSMIT_STATE;
 #else
   if (xmtMode == SSB_MODE && digitalRead(PTT) == HIGH) radioState = SSB_RECEIVE_STATE;
   if (xmtMode == SSB_MODE && digitalRead(PTT) == LOW) radioState = SSB_TRANSMIT_STATE;
-#endif // G0ORX_FRONTPANEL
+#endif // G0ORX_FRONTPANEL || defined(G0ORX_FRONTPANEL_2) || defined(G0ORX_CAT)
   if (xmtMode == CW_MODE && (digitalRead(paddleDit) == HIGH && digitalRead(paddleDah) == HIGH)) radioState = CW_RECEIVE_STATE;  // Was using symbolic constants. Also changed in code below.  KF5N August 8, 2023
   if (xmtMode == CW_MODE && (digitalRead(paddleDit) == LOW && xmtMode == CW_MODE && keyType == 0)) radioState = CW_TRANSMIT_STRAIGHT_STATE;
   if (xmtMode == CW_MODE && (keyPressedOn == 1 && xmtMode == CW_MODE && keyType == 1)) radioState = CW_TRANSMIT_KEYER_STATE;
@@ -3081,19 +3104,31 @@ FASTRUN void loop()  // Replaced entire loop() with Greg's code  JJP  7/14/23
       modeSelectOutExR.gain(0, powerOutSSB[currentBand]);  //AFP 10-21-22
       ShowTransmitReceiveStatus();
 
-#if defined(G0ORX_FRONTPANEL) || defined(G0ORX_CAT)
+#if defined(G0ORX_FRONTPANEL) || defined(G0ORX_FRONTPANEL_2) || defined(G0ORX_CAT)
       while (my_ptt == LOW) {
 #else
       while (digitalRead(PTT) == LOW) {
-#endif // G0ORX_FRONTPANEL
+#endif // G0ORX_FRONTPANEL || G0ORX_FRONTPANEL_2 || G0ORX_CAT
         ExciterIQData();
-#if defined(G0ORX_FRONTPANEL)
+#if defined(G0ORX_FRONTPANEL) || defined(G0ORX_FRONTPANEL_2)
         ExecuteButtonPress(ProcessButtonPress(ReadSelectedPushButton()));
-#endif // G0ORX_FRONTPANEL
+#endif // G0ORX_FRONTPANEL || G0ORX_FRONTPANEL_2
 #if defined(G0ORX_CAT)
         CATSerialEvent();
 #endif // G0ORX_CAT
+#ifdef G0ORX_AUDIO_DISPLAY
+        ShowTXAudio();
+#endif // G0ORX_AUDIO_DISPLAY
+#if (defined(G0ORX_FRONTPANEL) || defined(G0ORX_FRONTPANEL_2))
+        if (volumeChangeFlag == true) {
+          volumeChangeFlag = false;
+          UpdateVolumeField();
+        }
+#endif // G0ORX_FRONTPANEL || G0ORX_FRONTPANEL_2
       }
+#ifdef G0ORX_AUDIO_DISPLAY
+      DrawAudioSpectContainer();
+#endif // G0ORX_AUDIO_DISPLAY
       Q_in_L_Ex.end();  // End Transmit Queue
       Q_in_R_Ex.end();
       Q_in_L.begin();  // Start Receive Queue

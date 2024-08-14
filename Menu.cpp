@@ -134,6 +134,9 @@ int SetPrimaryMenuIndex()
   int val;
 
   mainMenuWindowActive = true;
+#if defined(G0ORX_FRONTPANEL_2)
+  calibrateFlag=1;
+#endif
   while (true) {
 
     if (filterEncoderMove != 0) {             // Did they move the encoder?
@@ -168,7 +171,7 @@ int SetPrimaryMenuIndex()
     val = ReadSelectedPushButton();  // Read the ladder value
 
     MyDelay(150L);
-#if defined(G0ORX_FRONTPANEL)
+#if defined(G0ORX_FRONTPANEL) || defined(G0ORX_FRONTPANEL_2)
     if(val!=-1) {
 #else
     if (val != -1 && val < (EEPROMData.switchValues[0] + WIGGLE_ROOM)) {      // Did they press Select?
@@ -191,6 +194,9 @@ int SetPrimaryMenuIndex()
     }
 
   }  // End while True
+#if defined(G0ORX_FRONTPANEL_2)
+  calibrateFlag=0;
+#endif
   tft.setTextColor(RA8875_WHITE);
   return mainMenuIndex;
 }
@@ -211,6 +217,9 @@ int SetSecondaryMenuIndex()
   int oldIndex = 0;
   int val;
 
+#if defined(G0ORX_FRONTPANEL_2)
+  calibrateFlag=1;
+#endif // G0ORX_FRONTPANEL_2
   while (true) {                                                        // How many secondary menu options?
     if (strcmp(secondaryChoices[mainMenuIndex][i], "Cancel") != 0) {    // Have we read the last entry in secondary menu?
       i++;                                                              // Nope.  
@@ -249,12 +258,14 @@ int SetSecondaryMenuIndex()
       tft.setCursor(300, i * 27 + 21);
       tft.print(secondaryChoices[mainMenuIndex][i]);
       filterEncoderMove = 0;
-
-Serial.println(String(__FUNCTION__)+": "+String(i));
     }
     val = ReadSelectedPushButton();  // Read the ladder value
     MyDelay(200L);
-    if (val != -1 && val < (EEPROMData.switchValues[0] + WIGGLE_ROOM)) {
+#if defined(G0ORX_FRONTPANEL) || defined(G0ORX_FRONTPANEL_2)
+    if(val!=-1) {
+#else
+    if (val != -1 && val < (EEPROMData.switchValues[0] + WIGGLE_ROOM)) {      // Did they press Select?
+#endif // G0ORX_FRONTPANEL
       val = ProcessButtonPress(val);  // Use ladder value to get menu choice
 
       if (val > -1) {                 // Valid choice?
@@ -268,6 +279,8 @@ Serial.println(String(__FUNCTION__)+": "+String(i));
     }
   }  // End while True
 
-Serial.println(String(__FUNCTION__)+": returning "+String(i));
+#if defined(G0ORX_FRONTPANEL_2)
+  calibrateFlag=0;
+#endif // G0ORX_FRONTPANEL_2
   return secondaryMenuIndex;
 }

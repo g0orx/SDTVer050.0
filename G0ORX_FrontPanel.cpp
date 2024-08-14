@@ -74,11 +74,6 @@ int G0ORXButtonPressed = -1;
 #define LED_2_PORT 7
 
 FASTRUN
-void PTT_Interrupt() {
-  my_ptt = digitalRead(PTT);
-} 
-
-FASTRUN
 static void interrupt1() {
   uint8_t pin;
   uint8_t state;

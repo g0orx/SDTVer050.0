@@ -33,6 +33,7 @@ void RFControlInit() {
     mcp.pinMode(9, OUTPUT);
     mcp.pinMode(10, OUTPUT);
     mcp.pinMode(11, OUTPUT);
+    
     mcp.pinMode(12, OUTPUT);
     mcp.pinMode(13, OUTPUT);
     mcp.pinMode(14, OUTPUT);

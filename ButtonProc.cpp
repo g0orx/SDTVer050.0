@@ -54,6 +54,91 @@
 }*/
 //==================  AFP 09-27-22
 
+void ButtonBandChange(int increment) {
+  int tempIndex;
+  tempIndex = currentBandA;
+  NCOFreq = 0L;
+
+  switch (activeVFO) {
+    case VFO_A:
+      tempIndex = currentBandA;
+      if (save_last_frequency == 1) {
+        lastFrequencies[tempIndex][VFO_A] = TxRxFreq;
+      } else {
+        if (save_last_frequency == 0) {
+          if (directFreqFlag == 1) {
+            lastFrequencies[tempIndex][VFO_A] = TxRxFreqOld;
+          } else {
+            if (directFreqFlag == 0) {
+              lastFrequencies[tempIndex][VFO_A] = TxRxFreq;
+            }
+          }
+          TxRxFreqOld = TxRxFreq;
+        }
+      }
+      currentBandA=currentBandA+increment;
+      if (currentBandA == NUMBER_OF_BANDS) {  // Incremented too far?
+        currentBandA = 0;                     // Yep. Roll to list front.
+      }
+      if (currentBandA < 0) {
+        currentBandA = NUMBER_OF_BANDS - 1;
+      }
+      currentBand = currentBandA;
+      centerFreq = TxRxFreq = currentFreqA = lastFrequencies[currentBandA][VFO_A] + NCOFreq;
+      break;
+
+    case VFO_B:
+      tempIndex = currentBandB;
+      if (save_last_frequency == 1) {
+        lastFrequencies[tempIndex][VFO_B] = TxRxFreq;
+      } else {
+        if (save_last_frequency == 0) {
+          if (directFreqFlag == 1) {
+            lastFrequencies[tempIndex][VFO_B] = TxRxFreqOld;
+          } else {
+            if (directFreqFlag == 0) {
+              lastFrequencies[tempIndex][VFO_B] = TxRxFreq;
+            }
+          }
+          TxRxFreqOld = TxRxFreq;
+        }
+      }
+      currentBandB=currentBandB+increment;
+      if (currentBandB == NUMBER_OF_BANDS) {  // Incremented too far?
+        currentBandB = 0;                     // Yep. Roll to list front.
+      }
+      if (currentBandB < 0) {
+        currentBandB = NUMBER_OF_BANDS - 1;
+      }
+      currentBand = currentBandB;
+      centerFreq = TxRxFreq = currentFreqB = lastFrequencies[currentBandB][VFO_B] + NCOFreq;
+      break;
+
+    case VFO_SPLIT:
+      DoSplitVFO();
+      break;
+  }
+  directFreqFlag = 0;
+  EraseSpectrumDisplayContainer();
+  DrawSpectrumDisplayContainer();
+  SetBand();
+  //SetFreq();
+  ShowFrequency();
+  ShowSpectrumdBScale();
+  MyDelay(1L);
+  AudioInterrupts();
+  EEPROMWrite();
+  // Draw or not draw CW filter graphics to audio spectrum area.  KF5N July 30, 2023
+  tft.writeTo(L2);
+  tft.clearMemory();
+  tft.writeTo(L1);
+  if(xmtMode == CW_MODE) BandInformation(); 
+  DrawBandWidthIndicatorBar();
+  DrawFrequencyBarValue();
+
+}
+
+#ifdef OLD_BAND_UP_DOWN
 /*****
   Purpose: To process a band increase button push
 
@@ -239,7 +324,7 @@ void ButtonBandDecrease() {
   DrawBandWidthIndicatorBar();
   DrawFrequencyBarValue();
 }
-
+#endif
 
 //================ AFP 09-27-22
 /*****
@@ -348,7 +433,9 @@ void ButtonMode()  //====== Changed AFP 10-05-22  =================
   DisplayIncrementField();
   AGCPrep();
   UpdateAGCField();
+#if !defined(G0ORX_FRONTPANEL_2)
   EncoderVolume();
+#endif
   UpdateInfoWindow();
   ControlFilterF();
   BandInformation();
@@ -429,6 +516,9 @@ int ButtonSetNoiseFloor() {
   tft.print(currentNoiseFloor[currentBand]);
   MyDelay(150L);
 
+#if defined(G0ORX_FRONTPANEL_2)
+  calibrateFlag=1;
+#endif // G0ORX_FRONTPANEL_2
   while (true) {
     if (filterEncoderMove != 0) {
       floor += filterEncoderMove;  // It moves the display
@@ -448,6 +538,9 @@ int ButtonSetNoiseFloor() {
       EEPROMData.spectrumNoiseFloor              = floor;
       EEPROMData.currentNoiseFloor[currentBand]  = floor;
       EEPROMWrite();
+#if defined(G0ORX_FRONTPANEL_2)
+      calibrateFlag=0;
+#endif // G0ORX_FRONTPANEL_2
       break;
     }
   }

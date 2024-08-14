@@ -62,19 +62,18 @@ void ProcessIQData()
     if (centerTuneFlag == 1) { //AFP 10-04-22
       DrawBandWidthIndicatorBar();
       ShowFrequency();
-#if defined(G0ORX_FRONTPANEL)
+#if defined(G0ORX_FRONTPANEL) || defined(G0ORX_FRONTPANEL_2)
       SetFreq();
-#endif // G0ORX_FRONTPANEL
+#endif // G0ORX_FRONTPANEL || G0ORX_FRONTPANEL_2
   //    SetFreq();            //AFP 10-04-22
      // BandInformation();
-
-
+     centerTuneFlag = 0;     //AFP 10-04-22
     }                       //AFP 10-04-22
-    centerTuneFlag = 0;     //AFP 10-04-22
+ 
     if (resetTuningFlag == 1) {
       ResetTuning();
+      resetTuningFlag = 0;
     }
-    resetTuningFlag = 0;
 
 
     /*******************************
@@ -104,7 +103,7 @@ void ProcessIQData()
 
     arm_biquad_cascade_df2T_f32(&s1_Receive, float_buffer_L, float_buffer_L, 2048); //AFP 09-23-22
     arm_biquad_cascade_df2T_f32(&s1_Receive, float_buffer_R, float_buffer_R, 2048); //AFP 09-23-22*/
-        arm_biquad_cascade_df2T_f32(&s1_Receive2, float_buffer_L, float_buffer_L, 2048); //AFP 11-03-22
+    arm_biquad_cascade_df2T_f32(&s1_Receive2, float_buffer_L, float_buffer_L, 2048); //AFP 11-03-22
     arm_biquad_cascade_df2T_f32(&s1_Receive2, float_buffer_R, float_buffer_R, 2048); //AFP 11-03-22
     
 

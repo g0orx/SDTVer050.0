@@ -676,6 +676,9 @@ void SetFavoriteFrequency() {
   tft.fillRect(SECONDARY_MENU_X, MENUS_Y, EACH_MENU_WIDTH, CHAR_HEIGHT, RA8875_MAGENTA);
   tft.setCursor(SECONDARY_MENU_X, MENUS_Y);
   tft.print(EEPROMData.favoriteFreqs[index]);
+#if defined(G0ORX_FRONTPANEL_2)
+  calibrateFlag=1;
+#endif // G0ORX_FRONTPANEL_2
   while (true) {
     if (filterEncoderMove != 0) {  // Changed encoder?
       index += filterEncoderMove;  // Yep
@@ -709,6 +712,9 @@ void SetFavoriteFrequency() {
       ShowBandwidth();
       FilterBandwidth();
       ShowFrequency();
+#if defined(G0ORX_FRONTPANEL_2)
+      calibrateFlag=0;
+#endif // G0ORX_FRONTPANEL_2
       break;
     }
   }
@@ -733,6 +739,9 @@ void GetFavoriteFrequency() {
   tft.fillRect(SECONDARY_MENU_X, MENUS_Y, EACH_MENU_WIDTH, CHAR_HEIGHT, RA8875_MAGENTA);
   tft.setCursor(SECONDARY_MENU_X, MENUS_Y);
   tft.print(EEPROMData.favoriteFreqs[index]);
+#if defined(G0ORX_FRONTPANEL_2)
+  calibrateFlag=1;
+#endif // G0ORX_FRONTPANEL_2
   while (true) {
     if (filterEncoderMove != 0) {  // Changed encoder?
       index += filterEncoderMove;  // Yep
@@ -827,6 +836,9 @@ void GetFavoriteFrequency() {
       ShowSpectrumdBScale();
       ShowSpectrum();
       //bands[currentBand].mode = currentBand;
+#if defined(G0ORX_FRONTPANEL_2)
+      calibrateFlag=0;
+#endif // G0ORX_FRONTPANEL_2
       return;
     }
   }
@@ -2499,7 +2511,7 @@ void EEPROMStartup()
   strcpy(EEPROMData.versionSettings, EEPROMSetVersion());  // Nope, this is a new the version, so copy new version title to EEPROM
   //                                                                     Check if calibration has not been done and/or switch values are wonky, okay to use defaults
   //                                                                     If the Teensy is unused, these EEPROM values are 0xFF or perhaps cleared to 0.
-#if !defined(G0ORX_FRONTPANEL)
+#if !(defined(G0ORX_FRONTPANEL) || defined(G0ORX_FRONTPANEL_2))
   if (switchThreshholds[9] < 440 || switchThreshholds[9] > 480) {
     EEPROMSaveDefaults2();     // At least give them some starting values
     switchThreshholds[9] = 0;  // This will force the next code block to set the switch values.
@@ -2507,7 +2519,7 @@ void EEPROMStartup()
   if (switchThreshholds[9] < 440 || switchThreshholds[9] > 480) {  // If the Teensy is unused, these EEPROM values are 0xFF or perhaps cleared to 0.
     SaveAnalogSwitchValues();                                      // In that case, we need to set the switch values.
   }
-#endif // G0ORX_FRONTPANEL
+#endif // G0ORX_FRONTPANEL || G0ORX_FRONTPANEL_2
   //                                                                     If we get here, the switch values have been set, either previously or by the call to
   //                                                                     SaveAnalogSwitchValues() as has the rest of the EEPROM data. This avoids recalibration.
 #if defined(G0ORX_FRONTPANEL) || defined(V12HWR)
