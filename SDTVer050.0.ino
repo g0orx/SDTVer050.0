@@ -807,6 +807,7 @@ AudioConnection patchCord24(Q_out_R_Ex, 0, modeSelectOutR, 1);
 // ================================== AFP 11-01-22
 
 // G0ORX - Added audio connection to USB Audio
+#if defined(M0JTS_USB_AUDIO)
 AudioOutputUSB           usbAudioOut;
 AudioConnection          patchUSB1Out(modeSelectOutL, 0, usbAudioOut, 0);
 AudioConnection          patchUSB2Out(modeSelectOutR, 0, usbAudioOut, 1);
@@ -814,7 +815,7 @@ AudioConnection          patchUSB2Out(modeSelectOutR, 0, usbAudioOut, 1);
 AudioInputUSB            usbAudioIn;
 AudioConnection          patchUSB1In(usbAudioIn, 0, modeSelectInExL, 0);
 AudioConnection          patchUSB2In(usbAudioIn, 1, modeSelectInExR, 0);
-
+#endif // M0JTS_USB_AUDIO
 // ===================
 
 // G0ORX - moved to seperate source file

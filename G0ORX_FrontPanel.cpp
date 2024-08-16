@@ -34,8 +34,6 @@
 #include <Adafruit_MCP23X17.h>
 #include "G0ORX_FrontPanel.h"
 
-int my_ptt=HIGH;  // active LOW
-
 #define DEBOUNCE_DELAY 10
 
 #define e1 volumeEncoder

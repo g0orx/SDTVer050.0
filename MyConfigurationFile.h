@@ -1,14 +1,14 @@
 // G0ORX Preferences
 
 // Uncomment if using G0ORX or K9HZ MCP23017 Front Panel
-//#define G0ORX_FRONTPANEL
+#define G0ORX_FRONTPANEL
 
 #if defined(G0ORX_FRONTPANEL)
 #include "G0ORX_FrontPanel.h"
 #endif // G0ORX_FRONTPANEL
 
 // Uncomment if using G0ORX RPi Pico Front Panel
-#define G0ORX_FRONTPANEL_2
+//#define G0ORX_FRONTPANEL_2
 
 #if defined(G0ORX_FRONTPANEL_2)
 #include "G0ORX_FrontPanel_2.h"
@@ -19,7 +19,8 @@
 #endif
 
 // Uncomment if using G0ORX Kenwood TS-2000 CAT interface
-#define G0ORX_CAT
+// Requires Dual Serial for USB Type
+//#define G0ORX_CAT
 
 #if defined(G0ORX_CAT)
 #include "G0ORX_CAT.h"
@@ -28,6 +29,10 @@
 // G0ORX_AUDIO_DISPLAY draws a Time Domain plot of the Microphone when transmitting
 #define G0ORX_AUDIO_DISPLAY
 
+
+// Uncomment if using M0JTS USB Audio at 192k (patched verions of Teensy Audio)
+// Requires "Serial + Serial + 192K Audio" for USB Type
+//#define M0JTS_USB_AUDIO
 
 //====================== User Specific Preferences =============
 

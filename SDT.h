@@ -20,7 +20,7 @@ extern struct maps myMapFiles[];
 
 // KI3P: added support for lowpass and bandpass filter boards
 
-//#define DEBUG_MESSAGES
+#define DEBUG_MESSAGES
 
 #ifdef DEBUG_MESSAGES
 #define Debug(x) Serial.println(x)
@@ -2227,7 +2227,7 @@ extern const float32_t n_fpass1;
 extern const float32_t n_fpass2;
 extern const float32_t n_fstop1;
 extern const float32_t n_fstop2;
-extern const float32_t n_samplerate;  // samplerate before decimation
+extern const float32_t n_samplerate;  // samplerate before decimation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
 
 extern double elapsed_micros_idx_t;
 extern double elapsed_micros_mean;
